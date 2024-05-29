@@ -1,4 +1,4 @@
-import './polyfill';
+import './polyfill.js';
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid'); 
 
