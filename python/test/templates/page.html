@@ -5,7 +5,7 @@
     Sign in / Sign up options
 </h2>
 <div >
-    <form action="http://127.0.0.1:8085/login" method="post">
+    <form action="http://localhost:8085/login" method="post">
         <input type="hidden" name="login" value="0">
         <button type="submit" class="button-custom" style="width: 20%;">
             Web 2.0 Sign in 
@@ -13,7 +13,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/login" method="post">
+    <form action="http://localhost:8085/login" method="post">
         <input type="hidden" name="login" value="4">
         <button type="submit" class="button-custom" style="width: 20%;">
             Web 2.0 Sign in + Connect Wallet
@@ -21,7 +21,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/login" method="post">
+    <form action="http://localhost:8085/login" method="post">
         <input type="hidden" name="login" value="6">
         <button type="submit" class="button-custom" style="width: 20%;">
             Web 3.0 Sign In
@@ -29,7 +29,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/login" method="post">
+    <form action="http://localhost:8085/login" method="post">
         <input type="hidden" name="login" value="3">
         <button type="submit" class="button-custom" style="width: 20%;">
             Sign in Auto Guest
@@ -37,7 +37,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/login" method="post">
+    <form action="http://localhost:8085/login" method="post">
         <input type="hidden" name="login" value="9">
         <button type="submit" class="button-custom" style="width: 20%;">
             Sign In with identity provider
@@ -49,7 +49,7 @@
         HyperID Features
     </h2>
 
-    <form action="http://127.0.0.1:8085/logout" method="post">
+    <form action="http://localhost:8085/logout" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             Log Out
         </button>
@@ -62,7 +62,7 @@
     <br>
 
     <div>
-        <form action="http://127.0.0.1:8085/user_info" method="post">
+        <form action="http://localhost:8085/user_info" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Info
             </button>
@@ -88,7 +88,7 @@
         Multi Factor Authorization (MFA)
     </h2>
 
-    <form action="http://127.0.0.1:8085/mfa/availability-check" method="post">
+    <form action="http://localhost:8085/mfa/availability-check" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             MFA Availability Check
         </button>
@@ -100,7 +100,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/mfa/transaction-start" method="post">
+    <form action="http://localhost:8085/mfa/transaction-start" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             MFA Transcation Start
         </button>
@@ -122,7 +122,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/mfa/transaction-status-get" method="post">
+    <form action="http://localhost:8085/mfa/transaction-status-get" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             MFA Transaction Status Check
         </button>
@@ -139,7 +139,7 @@
         KYC Features
     </h2>
 
-    <form action="http://127.0.0.1:8085/kyc/user-status-get" method="post">
+    <form action="http://localhost:8085/kyc/user-status-get" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             KYC User Status Get
         </button>
@@ -151,7 +151,7 @@
     </form>
     <br>
 
-    <form action="http://127.0.0.1:8085/kyc/user-status-top-levelget" method="post">
+    <form action="http://localhost:8085/kyc/user-status-top-levelget" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             KYC User Status Top Level Get
         </button>
@@ -170,7 +170,7 @@
     </h2>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-set-by-email" method="post">
+        <form action="http://localhost:8085/storage/data-set-by-email" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Set By Email
             </button>
@@ -188,7 +188,7 @@
     </div>
     <br>
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-get-by-email" method="post">
+        <form action="http://localhost:8085/storage/data-get-by-email" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Get By Email
             </button>
@@ -206,7 +206,7 @@
     </div>
     <br>
 
-    <form action="http://127.0.0.1:8085/storage/data-keys-list-get-by-email" method="post">
+    <form action="http://localhost:8085/storage/data-keys-list-get-by-email" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             User Data Keys List Get By Email
         </button>
@@ -224,7 +224,7 @@
     <br>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-delete-by-email" method="post">
+        <form action="http://localhost:8085/storage/data-delete-by-email" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Delete By Email
             </button>
@@ -247,7 +247,7 @@
     </h2>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-set-by-user-id" method="post">
+        <form action="http://localhost:8085/storage/data-set-by-user-id" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Set By User Id
             </button>
@@ -265,7 +265,7 @@
     </div>
     <br>
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-get-by-user-id" method="post">
+        <form action="http://localhost:8085/storage/data-get-by-user-id" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Get By User Id
             </button>
@@ -283,7 +283,7 @@
     </div>
     <br>
 
-    <form action="http://127.0.0.1:8085/storage/data-keys-list-get-by-user-id" method="post">
+    <form action="http://localhost:8085/storage/data-keys-list-get-by-user-id" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             User Data Keys List Get By User Id
         </button>
@@ -301,7 +301,7 @@
     <br>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-delete-by-user-id" method="post">
+        <form action="http://localhost:8085/storage/data-delete-by-user-id" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Delete By UserId
             </button>
@@ -322,7 +322,7 @@
         Storage By Wallet Features
     </h2>
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-set-by-wallet" method="post">
+        <form action="http://localhost:8085/storage/data-set-by-wallet" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%; ">
                 User Data Set By Wallet
             </button>
@@ -341,7 +341,7 @@
     <br>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-get-by-wallet" method="post">
+        <form action="http://localhost:8085/storage/data-get-by-wallet" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Get By Wallet
             </button>
@@ -358,7 +358,7 @@
         </form>
     </div>
     <br>
-    <form action="http://127.0.0.1:8085/storage/data-keys-list-get-by-wallet" method="post">
+    <form action="http://localhost:8085/storage/data-keys-list-get-by-wallet" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%; ">
             User Data Keys List Get By Wallet
         </button>
@@ -373,7 +373,7 @@
     </form>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-delete-by-wallet" method="post">
+        <form action="http://localhost:8085/storage/data-delete-by-wallet" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Delete By UserId
             </button>
@@ -396,7 +396,7 @@
         Storage By IDP Features
     </h2>
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-set-by-idp" method="post">
+        <form action="http://localhost:8085/storage/data-set-by-idp" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Set By IDP
             </button>
@@ -415,7 +415,7 @@
 
     <br>
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-get-by-idp" method="post">
+        <form action="http://localhost:8085/storage/data-get-by-idp" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Get By IDP
             </button>
@@ -432,7 +432,7 @@
         </form>
     </div>
     <br>
-    <form action="http://127.0.0.1:8085/storage/data-keys-list-get-by-idp" method="post">
+    <form action="http://localhost:8085/storage/data-keys-list-get-by-idp" method="post">
         <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
             User Data Keys List Get By IDP
         </button>
@@ -447,7 +447,7 @@
     </form>
 
     <div>
-        <form action="http://127.0.0.1:8085/storage/data-delete-by-idp" method="post">
+        <form action="http://localhost:8085/storage/data-delete-by-idp" method="post">
             <button {% if not is_authorized %}disabled{%endif%} type="submit" class="button-custom" style="width: 20%;">
                 User Data Delete By IDP
             </button>
