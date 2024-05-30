@@ -174,8 +174,4 @@ if ($auth && isset($_GET['code'])) {
     <br>
 
 </body>
-```
-## License
-
-### Code
-The code in this repository, including all code samples in the notebooks listed above, is released under the [MIT license](LICENSE-CODE). Read more at the [Open Source Initiative](https://opensource.org/licenses/MIT).
+```                                                                                                                                                                                                                      
