@@ -1,4 +1,4 @@
-# User data by email get list of shared keys
+# User data / by email / get list of shared keys
 
 ## Request
 

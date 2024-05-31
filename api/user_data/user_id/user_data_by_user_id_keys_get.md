@@ -1,12 +1,12 @@
-# User data / by email / get
+# User data / by user id / get list of keys
 
 ## Request
 
 Value              | Description 
 -------------------|---------------
-URI                | https://api.hypersecureid.com/user-data/by-email/get
+URI                | https://api.hypersecureid.com/user-data/by-user-id/list-get
 Method             | POST 
-Authorization      | Bearer AA.BB.CC 
+Authorization      | Bearer AA.BB.CC
 Content-type       | application/json
 Scopes             | email, user-data-get
 
@@ -15,43 +15,30 @@ Scopes             | email, user-data-get
 Name               | Required | Type           | Description
 -------------------|----------|----------------|---------------------
 request_id         | false    | int64          | Opaque value used to maintain id between the request and response.
-value_keys         | true     | array          | Array of strings
 
 **Examples**
 
 ```HTTP
-POST /user-data/by-email/get HTTP/1.1
+POST /user-data/by-user-id/list-get HTTP/1.1
 Host: api.hypersecureid.com
 Content-Type: application/json
 Authorization: Bearer AA.BB.CC
-Content-Length: 47
+Content-Length: 2
 
-{
-    "value_keys": [
-        "key"
-    ]
-}
+{}
 ```
 ```bash
-curl --location 'https://api.hypersecureid.com/user-data/get' \
+curl --location 'https://api.hypersecureid.com/user-data/by-user-id/list-get' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer AA.BB.CC' \
---data '{
-    "value_keys": [
-        "key"
-    ]
-}'
+--data '{}'
 ```
 ```JS
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Bearer AA.BB.CC");
 
-const raw = JSON.stringify({
-  "value_keys": [
-    "key"
-  ]
-});
+const raw = JSON.stringify({});
 
 const requestOptions = {
   method: "POST",
@@ -60,7 +47,7 @@ const requestOptions = {
   redirect: "follow"
 };
 
-fetch("https://api.hypersecureid.com/user-data/by-email/get", requestOptions)
+fetch("https://api.hypersecureid.com/user-data/by-user-id/list-get", requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));
@@ -70,11 +57,12 @@ fetch("https://api.hypersecureid.com/user-data/by-email/get", requestOptions)
 
 **Body Json Field**
 
-Name          | Type          | Description
---------------|---------------|---------------------
-request_id    | int64         | Opaque value used to maintain id between the request and response.
-result        | int           | See table below
-values        | array         | Array of objects that contain: value_key, value_data
+Name                    | Type          | Description
+------------------------|---------------|---------------------
+request_id              | int64         | Opaque value used to maintain id between the request and response.
+result                  | int           | See table below
+keys_private            | array         | Array of strings
+keys_public             | array         | Array of strings
 
 **Result**
 
@@ -87,7 +75,6 @@ values        | array         | Array of objects that contain: value_key, value_
 | -3     | fail by access denied               
 | -4     | fail by service temporary not valid 
 | -5     | fail by invalid parameters          
-| -6     | fail by keys size limit reached     
 
 **Example**
 
@@ -97,11 +84,9 @@ Content-Type: application/json; charset=UTF-8
 
 {
     "result": 0,
-    "values": [
-        {
-            "value_data": "data",
-            "value_key": "key"
-        }
-    ]
+    "keys_private": [
+        "key"
+    ],
+    "keys_public": []
 }
 ```
