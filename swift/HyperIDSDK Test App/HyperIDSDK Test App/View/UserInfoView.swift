@@ -25,7 +25,7 @@ struct UserInfoView: View {
 				DisplayItemView(title: "ip", value: ip)
 			}
 			if let walletAddress = userInfo.wallet?.address {
-				DisplayItemView(title: "wallet.ddress", value: walletAddress)
+				DisplayItemView(title: "wallet.address", value: walletAddress)
 			}
 			if let walletChainId = userInfo.wallet?.chainId {
 				DisplayItemView(title: "wallet.chainId", value: walletChainId)

@@ -3,7 +3,7 @@ import Foundation
 //**************************************************************************************************
 //	MARK: UserInfo
 //--------------------------------------------------------------------------------------------------
-public class UserInfo : Decodable {
+public class UserInfo : Codable {
 	//**************************************************************************************************
 	//	MARK:  UserInfo.CodingKeys
 	//--------------------------------------------------------------------------------------------------
@@ -54,5 +54,32 @@ public class UserInfo : Decodable {
 		self.deviceId	= try container.decodeIfPresent(String.self, forKey: .deviceId)
 		self.ip			= try container.decodeIfPresent(String.self, forKey: .ip)
 		self.wallet		= try? UserInfo.Wallet(from: decoder)
+	}
+	//==================================================================================================
+	//	encode
+	//--------------------------------------------------------------------------------------------------
+	public func encode(to encoder: any Encoder) throws {
+		var container: KeyedEncodingContainer<UserInfo.CodingKeys> = encoder.container(keyedBy: UserInfo.CodingKeys.self)
+		if let userId = userId
+		{
+			try container.encode(userId, forKey: .userId)
+		}
+		try container.encode(isGuest, forKey: .isGuest)
+		if let email = email
+		{
+			try container.encode(email, forKey: .email)
+		}
+		if let deviceId = deviceId
+		{
+			try container.encode(deviceId, forKey: .deviceId)
+		}
+		if let ip = ip
+		{
+			try container.encode(ip, forKey: .ip)
+		}
+		if let wallet = wallet
+		{
+			try wallet.encode(to: encoder)
+		}
 	}
 }

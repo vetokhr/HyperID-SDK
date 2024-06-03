@@ -1,38 +1,28 @@
 import Foundation
 
 //**************************************************************************************************
-//	MARK: KYCVerificationLevel
+//	MARK: ProviderInfo
 //--------------------------------------------------------------------------------------------------
-public enum KYCVerificationLevel {
-	case unsupported(code : Int)
-	
-	case basic
-	case full
+public class ProviderInfo {
+	var scheme	: String
+	var host	: String
+	var port	: UInt16
 	
 	//==================================================================================================
 	//	init
 	//--------------------------------------------------------------------------------------------------
-	init(rawValue : Int) {
-		switch rawValue {
-			case 3:
-				self = .basic
-			case 4:
-				self = .full
-			default:
-				self = .unsupported(code: rawValue)
-		}
+	public required init(scheme: String, host: String, port: UInt16) {
+		self.scheme = scheme
+		self.host = host
+		self.port = port
 	}
 	//==================================================================================================
-	//	rawValue
+	//	isValid
 	//--------------------------------------------------------------------------------------------------
-	var rawValue : Int {
-		switch self {
-		case .unsupported(code: let code):
-			return code
-		case .basic:
-			return 3
-		case .full:
-			return 4
-		}
+	public var isValid : Bool {
+		!(scheme.isEmpty
+		|| host.isEmpty)
 	}
+	public static var sandbox		: Self { Self.init(scheme: "https", host: "login-sandbox.hypersecureid.com",	port: 443) }
+	public static var production	: Self { Self.init(scheme: "https", host: "login.hypersecureid.com",			port: 443) }
 }

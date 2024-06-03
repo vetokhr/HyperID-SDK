@@ -58,9 +58,9 @@ let hyperIdSDK = try await HyperIDSDK(clientInfo:       clientInfo,
 In case of incorrect initialization, the constructor may `throw` the following exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.invalidProviderInfo` | Invalid provider info. No HyperID infrastructure found by this provider info. Please check your input |
-|`HyperIDAPIBaseError.serverMaintenance` | HyperID infrastructure on maintenance and not ready to process user requests. Please try later |
-|`HyperIDAPIBaseError.networkingError`| Networking error raised by URLSession during initialization.|
+|`HyperIDBaseAPIError.invalidProviderInfo` | Invalid provider info. No HyperID infrastructure found by this provider info. Please check your input |
+|`HyperIDBaseAPIError.serverMaintenance` | HyperID infrastructure on maintenance and not ready to process user requests. Please try later |
+|`HyperIDBaseAPIError.networkingError`| Networking error raised by URLSession during initialization.|
 
 ## Authorization
 
@@ -86,14 +86,14 @@ let url = try hyperIdSDK.startSignInWeb2(kycVerificationLevel: .full)
 In case of invalid usage, the method could `throw` the following exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.invalidKYCVerificationLevel`| Invalid KYCVerificationLevel value. Please select one of the presented in KYCVerificationLevel
+|`HyperIDBaseAPIError.invalidKYCVerificationLevel`| Invalid KYCVerificationLevel value. Please select one of the presented in KYCVerificationLevel
 
-### startSignInWeb3(walletFamily: WalletFamily?, kycVerificationLevel:	KYCVerificationLevel?) -> URL
+### startSignInWeb3(walletFamily: Int64?, kycVerificationLevel:	KYCVerificationLevel?) -> URL
 
 The method starts auth with using Web3 and returns ready-to-sign-in URL to HyperID services.
 | Parameter | Type | Definition|
 |-|-|-|
-|`walletFamily` | `WalletFamily` | Parameter which specify working network for Web3 (`Ethereum` by default)|          
+|`walletFamily` | `Int64` | Parameter which specify working network for Web3 (`Ethereum` by default)|          
 |`kycVerificationLevel` | `KYCVerificationLevel?` | Optional parameter, disabled by default. You can specify user KYC check<br>during authorization|
 
 ## Sample
@@ -105,15 +105,15 @@ let url = try hyperIdSDK.startSignInWeb3()
 let url = try hyperIdSDK.startSignInWeb2(kycVerificationLevel: .basic)
 ```
 ```Swift
-let url = try hyperIdSDK.startSignInWeb2(walletFamily:         .solana,
+let url = try hyperIdSDK.startSignInWeb2(walletFamily:         1,
 					 kycVerificationLevel: .full)
 ```
 
-List of WalletFamilies could be discovered in `HyperIDSDK`'s `providerConfiguration` field. In case of invalid usage, the method could `throw` the following exceptions:
+List of WalletFamilies could be discovered in `HyperIDSDK`'s `openIDConfiguration` field. In case of invalid usage, the method could `throw` the following exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.invalidWalletFamily`| Invalid `walletFamily` value. Please select one of the presented in `providerConfiguration`|
-|`HyperIDAPIBaseError.invalidKYCVerificationLevel`| Invalid KYCVerificationLevel value. Please select one of the presented in `KYCVerificationLevel` enum|
+|`HyperIDBaseAPIError.invalidWalletFamily`| Invalid `walletFamily` value. Please select one of the presented in `openIDConfiguration`|
+|`HyperIDBaseAPIError.invalidKYCVerificationLevel`| Invalid KYCVerificationLevel value. Please select one of the presented in `KYCVerificationLevel` enum|
 
 ### startSignInUsingWallet(walletGetMode: WalletGetMode, walletFamily: WalletFamily?) -> URL
 
@@ -132,16 +132,16 @@ let url = try hyperIdSDK.startSignInUsingWallet()
 let url = try hyperIdSDK.startSignInUsingWallet(walletGetMode: .walletGetFull)
 ```
 ```Swift
-let url = try hyperIdSDK.startSignInUsingWallet(walletFamily: .solana)
+let url = try hyperIdSDK.startSignInUsingWallet(walletFamily: 0)
 ```
 ```Swift
 let url = try hyperIdSDK.startSignInUsingWallet(walletGetMode:	.walletGetFull,
-					       	walletFamily:	.solana)
+					       	walletFamily:	1)
 ```
-List of available WalletFamilies could be discovered in `HyperIDSDK`'s `providerConfiguration` field. In case of invalid usage, the method could `throw` the following exceptions:
+List of available WalletFamilies could be discovered in `HyperIDSDK`'s `openIDConfiguration` field. In case of invalid usage, the method could `throw` the following exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.invalidWalletFamily`| Invalid `walletFamily` value. Please select one of the presented in `providerConfiguration`|
+|`HyperIDBaseAPIError.invalidWalletFamily`| Invalid `walletFamily` value. Please select one of the presented in `openIDConfiguration`|
 
 ### startSignInGuestUpgrade()`
 
@@ -153,28 +153,28 @@ The method starts auth flow for guest account upgrade and returns ready-to-sign-
 let url = try hyperIdSDK.startSignInGuestUpgrade()
 ```
 
-### startSignInIdentityProvider(identityProvider: IdentityProvider, kycVerificationLevel: KYCVerificationLevel?) -> URL
+### startSignInIdentityProvider(identityProvider: String, kycVerificationLevel: KYCVerificationLevel?) -> URL
 
 The method starts auth with using Web2 and returns ready-to-sign-in URL to HyperID services with using specified identity provider.
 
 | Parameter | Type | Definition|
 |-|-|-|
-|identityProvider | IdentityProvider | enum `IdentityProvider` value which specifies identity providers such as `.google` `.apple` `.twitter` `.discord`, etc. (see details in enum definition)|
+|identityProvider | IdentityProvider | String value which specifies identity providers such as `google` `apple` `.twitter` `discord`, etc. (see details in actual OpenIDConfiguration)|
 |kycVerificationLevel | KYCVerificationLevel? | Optional parameter, disabled by default. You can specify user KYC check<br>during authorization|
 
 #### Sample
 
 ```Swift
-let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider: .google)
+let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider: "google")
 ```
 ```Swift
-let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider:		.google
+let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider:		"google"
 						     kycVerificationLevel:	.full)
 ```
-Full list of available `identity proviiders` could be discovered in `HyperIDSDK`'s providerConfiguration field. In case of invalid usage, the method could throw the following exceptions:
+Full list of available `identity proviiders` could be discovered in `HyperIDSDK`'s openIDConfiguration field. In case of invalid usage, the method could throw the following exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.unknownIdentityProvider`| Identity provider invalid. Please check availability in provider configuration.|
+|`HyperIDBaseAPIError.unknownIdentityProvider`| Identity provider invalid. Please check availability in provider configuration.|
 
 ### completeSignIn(redirectURL: URL)
 
@@ -194,10 +194,59 @@ try await hyperIDSDK.completeSignIn(redirectURL: url)
 During execution this code should call next exceptions:
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.invalidClientInfo`| Client info installed during initialization invalid. Please reinit SDK and start new authorization.|
-|`HyperIDAPIAuthError.authorizationInvalidRedirectURLError`| Recieved URL is invalid to complete authorization. Please restart authorization and try again.|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues
+|`HyperIDBaseAPIError.invalidClientInfo`| Client info installed during initialization invalid. Please reinit SDK and start new authorization.|
+|`HyperIDAuthAPIError.authorizationInvalidRedirectURLError`| Recieved URL is invalid to complete authorization. Please restart authorization and try again.|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues
+
+### startSignInWithTransaction(from: String?, to: String, chain: String, data: String, gas: String?, nonce: String?, value: String?) -> URL
+
+The method starts auth with using Web3 and returns ready-to-sign-in URL to HyperID services, starts transaction with parameters and complete the process only transaction completion.
+
+| Parameter | Type | Definition|
+|-|-|-|
+|`from` | `String?` | User wallet address. Optional, if empty `HyperID` will give you the choice from your attached wallets list |
+|`to` | `String` | Contract address |
+|`chain` | `String` | Contract chain id |
+|`data` | `String` | External formed data |
+|`gas` | `String?` | Fee value. Optional |
+|`nonce` | `String?` | Your transaction id in this chain. Optional |
+|`value` | `String?` | Amount of native tokens to pay. Optional |
+
+
+```Swift
+let url = try hyperIdSDK.startSignInWithTransaction(from:	"0x43D192d3eC9CaEFbc92385bGD3508d87E566595f",
+                                                    to:		"0x0AeB980AB115E45409D9bA31CCffcc75995E3dfA",
+                                                    chain:	"11155111",
+                                                    data:	"0x0",
+                                                    nonce:	"0",
+                                                    value:	"0x1")
+```
+
+### completeSignInWithTransaction(redirectURL: URL)
+
+After web part of authorization for transaction, HyperID should redirect you to the redirect URL specified in `ClientInfo`. Use it to complete authorization and continue your work with HyperID SDK.
+| Parameter | Type | Definition|
+|-|-|-|
+|`redirectURL` | `URL` | Redirect URL recieved from the `HyperID`|
+
+#### Sample
+
+```Swift
+let url = URL(string: "redirect_url")! //replace this with your url
+
+try await hyperIDSDK.completeSignInWithTransaction(redirectURL: url)
+```
+
+During execution this code should call next exceptions:
+|Exception| Description|
+|---------|------------|
+|`HyperIDBaseAPIError.invalidClientInfo`| Client info installed during initialization invalid. Please reinit SDK and start new authorization.|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues
+|`HyperIDAuthAPIError.authorizationInvalidRedirectURLError`| Recieved URL is invalid to complete authorization. Please restart authorization and try again.|
+|`HyperIDAuthAPIError.transactionInvalidParameters`| Invalid transaction parameters.|
+|`HyperIDAuthAPIError.transactionRejectedByUser`| Transaction was terminated by user.|
 
 ### isAuthorized
 
@@ -219,8 +268,8 @@ try await hyperIdSDK.signOut()
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### getUserInfo() -> UserInfo
 
@@ -262,8 +311,8 @@ Possible runtime issues
 |Exception| Description|
 |---------|------------|
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### getUserKYCStatusTopLevelInfo() -> UserKYCStatusTopLevelInfo?
 
@@ -280,8 +329,8 @@ Possible runtime issues
 |Exception| Description|
 |---------|------------|
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ## MFA
 
@@ -300,8 +349,8 @@ Possible runtime issues
 |Exception| Description|
 |---------|------------|
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### startTransaction(question: String, controlCode: Int) -> Int
 
@@ -320,10 +369,10 @@ let transactionId = try await hyperIdSDK.startTransaction(question: "Your awesom
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIMFAError.controlCodeInvalidValue`| Applied code not in described before range.
+|`HyperIDMFAAPIError.controlCodeInvalidValue`| Applied code not in described before range.
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### getMFATransactionStatus(transactionId: Int) -> MFATransactionStatus?
 
@@ -339,8 +388,8 @@ Possible runtime issues
 |Exception| Description|
 |---------|------------|
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### cancelMFATransaction(transactionId: Int) -> MFATransactionStatus?
 
@@ -355,14 +404,28 @@ let status = try await hyperIdSDK.cancelMFATransaction(transactionId: 42)
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIMFAError.MFATransactionNotFound`| HyperID MFA transaction with specifier ID not found|
-|`HyperIDAPIMFAError.MFATransactionAlreadyCompleted`| HyperID MFA transaction with specifier ID already completed and cannot be canceled.|
+|`HyperIDMFAAPIError.MFATransactionNotFound`| HyperID MFA transaction with specifier ID not found|
+|`HyperIDMFAAPIError.MFATransactionAlreadyCompleted`| HyperID MFA transaction with specifier ID already completed and cannot be canceled.|
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ## Storage
 
+HyperID allows you to work user's wallets described with specified structure which defines public information about `Wallet`: `address`, `chain`, `family`, `label` given by user
+
+### getUserWallets() -> (walletsPrivate: [Wallet], walletsPublic: [Wallet])
+
+The method returns tuple of 2 named arrays with your client private and public user's wallet. Method have no input parameters
+
+### Sample
+
+```Swift
+let result = try await hyperIdSDK.getUserWallets()
+
+// ...
+```
+ 
 HyperID allows you to store additional user data in 4 kinds of storage: `.email`, `.userID`, `.wallet`(with specified address) and `.identityProvider`(for each of identity providers) which can be `.private` as well as `.public` and shared between another HyperID clients.
 
 ### getUserKeysList(storage: HyperIDStorage) -> (keysPrivate: [String], keysPublic: [String])
@@ -390,18 +453,18 @@ print("private: \(result.keysPrivate)")
 print("public: \(result.keysPublic)")
 ```
 ```Swift
-let result = try await hyperIdSDK.getUserKeysList(storage: .identityProvider(.apple))
+let result = try await hyperIdSDK.getUserKeysList(storage: .identityProvider("apple"))
 print("private: \(result.keysPrivate)")
 print("public: \(result.keysPublic)")
 ```
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIStorageError.identityProviderNotFound` | Given identity provider is not supported. Check actual list `from providerConfiguration`
-|`HyperIDAPIStorageError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
+|`HyperIDStorageAPIError.identityProviderNotFound` | Given identity provider is not supported. Check actual list `from openIDConfiguration`
+|`HyperIDStorageAPIError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### getUserSharedKeysList(storage: HyperIDStorage) -> [String]
 
@@ -425,17 +488,17 @@ let result = try await hyperIdSDK.getUserSharedKeysList(storage: .wallet(address
 print("sharedPublic: \(result)")
 ```
 ```Swift
-let result = try await hyperIdSDK.getUserSharedKeysList(storage: .identityProvider(.apple))
+let result = try await hyperIdSDK.getUserSharedKeysList(storage: .identityProvider("apple"))
 print("sharedPublic: \(result)")
 ```
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIStorageError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from providerConfiguration`
-|`HyperIDAPIStorageError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
+|`HyperIDStorageAPIError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from openIDConfiguration`
+|`HyperIDStorageAPIError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### setUserData(_ value: (key: String, value: String), dataScope: UserDataScope, storage: HyperIDStorage)
 
@@ -466,19 +529,19 @@ try await hyperIdSDK.setUserData((key: "testKeyPublicWallet", value: "testValueP
 ```Swift
 try await hyperIdSDK.setUserData((key: "testKeyPrivateIdp", value: "testValuePrivateIdp"),
 				 dataScope:	.private,
-				 storage:	.identityProvider(.google))
+				 storage:	.identityProvider("google"))
 ```
 
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIStorageError.keyInvalid`| Please check your value key. It should be not empty|
-|`HyperIDAPIStorageError.keyAccessDenied`| You have no rights to change this key value|
-|`HyperIDAPIStorageError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from providerConfiguration`
-|`HyperIDAPIStorageError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
+|`HyperIDStorageAPIError.keyInvalid`| Please check your value key. It should be not empty|
+|`HyperIDStorageAPIError.keyAccessDenied`| You have no rights to change this key value|
+|`HyperIDStorageAPIError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from openIDConfiguration`
+|`HyperIDStorageAPIError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### getUserData(_ key: String, storage: HyperIDStorage) -> String?
 
@@ -504,16 +567,16 @@ let value = try await hyperIdSDK.getUserData("testKeyPublicWallet",
 ```
 ```Swift
 let value = try await hyperIdSDK.getUserData("testKeyPrivateIdp",
-					     storage:	.identityProvider(.google))
+					     storage:	.identityProvider("google"))
 ```
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIStorageError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from providerConfiguration`
-|`HyperIDAPIStorageError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
+|`HyperIDStorageAPIError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from openIDConfiguration`
+|`HyperIDStorageAPIError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|
 
 ### deleteUserData(_ key: String, storage: HyperIDStorage)
 
@@ -539,13 +602,13 @@ try await hyperIdSDK.deleteUserData("testKeyPublicWallet",
 ```
 ```Swift
 try await hyperIdSDK.deleteUserData("testKeyPrivateIdp",
-				    storage: .identityProvider(.google))
+				    storage: .identityProvider("google"))
 ```
 Possible runtime issues
 |Exception| Description|
 |---------|------------|
-|`HyperIDAPIStorageError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from providerConfiguration`
-|`HyperIDAPIStorageError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
+|`HyperIDStorageAPIError.identityProviderNotFound`| Given identity provider is not supported. Check actual list `from openIDConfiguration`
+|`HyperIDStorageAPIError.walletNotExists`| Crypto wallet with given address doesn't exists or curent user is not wallet owner |
 |`HyperIDSDKError.authorizationExpired`| HyperID authorization expired. Please authorize user again from the start|
-|`HyperIDAPIBaseError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
-|`HyperIDAPIBaseError.networkingError`| URLSession networking issues|
+|`HyperIDBaseAPIError.serverMaintenance`|HyperID infrastructure on maintenance and not ready to process user requests. Please try later|
+|`HyperIDBaseAPIError.networkingError`| URLSession networking issues|

@@ -1,9 +1,10 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
-//	MARK: HyperIDAPIMFA
+//	MARK: HyperIDMFAAPI
 //--------------------------------------------------------------------------------------------------
-public class HyperIDAPIMFA : HyperIDAPIBase {
+public class HyperIDMFAAPI : HyperIDBaseAPI {
 	//==================================================================================================
 	//	init
 	//--------------------------------------------------------------------------------------------------
@@ -17,7 +18,7 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 	//--------------------------------------------------------------------------------------------------
 	public func checkAvailability(accessToken: String) async throws -> Bool {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		let urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("mfa-client/availability-check"),
 																  accessToken: accessToken)
@@ -25,19 +26,19 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			guard let availabilityCheckResponse = try? JSONDecoder().decode(MFAAvailablilityCheckRepsonse.self, from: data) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try availabilityCheckResponse.validate()
 			return availabilityCheckResponse.isAvailable
-		} catch let error as HyperIDAPIMFAError {
+		} catch let error as HyperIDMFAAPIError {
 			throw error
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 	//==================================================================================================
@@ -47,10 +48,10 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 								 controlCode	: Int,
 								 accessToken	: String) async throws -> Int {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		guard (0...99).contains(controlCode) else {
-			throw HyperIDAPIMFAError.controlCodeInvalidValue
+			throw HyperIDMFAAPIError.controlCodeInvalidValue
 		}
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("mfa-client/transaction/start/v2"),
 																  accessToken: accessToken)
@@ -72,19 +73,19 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			guard let transactionStartResponse = try? JSONDecoder().decode(MFATransactionStartResponse.self, from: data) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try transactionStartResponse.validate()
 			return transactionStartResponse.transactionId
-		} catch let error as HyperIDAPIMFAError {
+		} catch let error as HyperIDMFAAPIError {
 			throw error
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 	//==================================================================================================
@@ -93,7 +94,7 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 	public func getTransactionStatus(transactionId : Int,
 									 accessToken : String) async throws -> MFATransactionStatus? {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("mfa-client/transaction/status-get"),
 																  accessToken: accessToken)
@@ -105,19 +106,19 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			guard let transactionStatusGetResponse = try? JSONDecoder().decode(MFATransactionStatusResponse.self, from: data) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try transactionStatusGetResponse.validate()
 			return transactionStatusGetResponse.status
-		} catch let error as HyperIDAPIMFAError {
+		} catch let error as HyperIDMFAAPIError {
 			throw error
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 	//==================================================================================================
@@ -126,7 +127,7 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 	public func cancelTransaction(transactionId : Int,
 								  accessToken : String) async throws {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("/mfa-client/transaction/cancel"),
 																  accessToken: accessToken)
@@ -138,18 +139,18 @@ public class HyperIDAPIMFA : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			guard let transactionCancelResponse = try? JSONDecoder().decode(MFATransactionCancelResponse.self, from: data) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try transactionCancelResponse.validate()
-		} catch let error as HyperIDAPIMFAError {
+		} catch let error as HyperIDMFAAPIError {
 			throw error
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 }

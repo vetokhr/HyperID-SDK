@@ -58,7 +58,7 @@ class RootController {
 	//--------------------------------------------------------------------------------------------------
 	init?(alertState: AlertState) async {
 		let secretClientInfo	= ClientInfo(clientId: 				"android-sdk-test",
-											 redirectURL:			"ai.hypersphere.hyperid://localhost:4200/auth/hyper-id/callback/*",
+											 redirectURL:			"ai.hypersphere.hyperid://localhost:4200/*",
 											 authorizationMethod:	.clientSecret(secret:	secret))
 		let hsClientInfo		= ClientInfo(clientId: 				"android-sdk-test-hs",
 											 redirectURL:			"ai.hypersphere.hyperid://localhost:4200/auth/hyper-id/callback/*",
@@ -76,14 +76,23 @@ class RootController {
 		do {
 			sdkSecret				= try await HyperIDSDK(clientInfo:		secretClientInfo,
 														   authRestoreInfo: authRestoreInfoSecret,
+														   authRestoreInfoUpdateCallback: { authRestoreInfo in
+				//place your save code here
+			},
 														   providerInfo:	.stage,
 														   urlSession:		session)
 			sdkHS					= try await HyperIDSDK(clientInfo:		hsClientInfo,
 														   authRestoreInfo: authRestoreInfoHS256,
+														   authRestoreInfoUpdateCallback: { authRestoreInfo in
+				//place your save code here
+			},
 														   providerInfo:	.stage,
 														   urlSession:		session)
 			sdkRS					= try await HyperIDSDK(clientInfo:		rsClientInfo,
 														   authRestoreInfo: authRestoreInfoRS256,
+														   authRestoreInfoUpdateCallback: { authRestoreInfo in
+				//place your save code here
+			},
 														   providerInfo:	.stage,
 														   urlSession:		session)
 			clientWithSecret	= ClientController(hyperIDSDK: sdkSecret, alertState: alertState)
@@ -111,17 +120,17 @@ class RootController {
 					
 				}
 			}
-		} catch HyperIDAPIBaseError.invalidProviderInfo {
+		} catch HyperIDBaseAPIError.invalidProviderInfo {
 			alertState.title	= "Invalid HyperID SDK configuration"
 			alertState.message	= "Please check your HyperIDSDK providerInfo"
 			alertState.isActive	= true
 			return nil
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
 			return nil
-		} catch HyperIDAPIBaseError.networkingError(description: let networkingDesc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let networkingDesc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "Details: \(networkingDesc)"
 			alertState.isActive	= true

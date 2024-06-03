@@ -1,16 +1,14 @@
 import Foundation
 
 //**************************************************************************************************
-//	MARK: HyperIDSDKErrorProtocol
+//	MARK: HyperIDErrorProtocol
 //--------------------------------------------------------------------------------------------------
-protocol HyperIDSDKErrorProtocol : Error, LocalizedError {
-	
-}
+public protocol HyperIDErrorProtocol : Error, LocalizedError {}
 
 //**************************************************************************************************
 //	MARK: HyperIDAPIBaseError
 //--------------------------------------------------------------------------------------------------
-public enum HyperIDAPIBaseError : HyperIDSDKErrorProtocol {
+public enum HyperIDBaseAPIError : HyperIDErrorProtocol {
 	case invalidProviderInfo
 	case invalidKYCVerificationLevel
 	case invalidAccessToken

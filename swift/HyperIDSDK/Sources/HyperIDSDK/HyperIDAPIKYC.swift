@@ -1,9 +1,12 @@
 import Foundation
+import HyperIDBase
+import HyperIDAuth
+
 
 //**************************************************************************************************
-//	MARK: HyperIDAPIKYC
+//	MARK: HyperIDKYCAPI
 //--------------------------------------------------------------------------------------------------
-public class HyperIDAPIKYC : HyperIDAPIBase {
+public class HyperIDKYCAPI : HyperIDBaseAPI {
 	//==================================================================================================
 	//	init
 	//--------------------------------------------------------------------------------------------------
@@ -18,7 +21,7 @@ public class HyperIDAPIKYC : HyperIDAPIBase {
 	public func getUserKYCStatusInfo(kycVerificationLevel:	KYCVerificationLevel,
 									 accessToken:			String) async throws -> UserKYCStatusInfo? {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("kyc/user/status-get"),
 																  accessToken: accessToken)
@@ -30,20 +33,20 @@ public class HyperIDAPIKYC : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			if data.count > 0 {
 				guard let userKYCStatusInfoResponse = try? JSONDecoder().decode(UserKYCStatusInfoResponse.self, from: data) else {
-					throw HyperIDAPIBaseError.serverMaintenance
+					throw HyperIDBaseAPIError.serverMaintenance
 				}
 				return try userKYCStatusInfoResponse.factoryUserKYCStatusInfo()
 			} else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 	//==================================================================================================
@@ -51,7 +54,7 @@ public class HyperIDAPIKYC : HyperIDAPIBase {
 	//--------------------------------------------------------------------------------------------------
 	public func getUserKYCStatusTopLevelInfo(accessToken: String) async throws -> UserKYCStatusTopLevelInfo? {
 		guard !accessToken.isEmpty else {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		let urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("kyc/user/status-top-level-get"),
 																  accessToken: accessToken)
@@ -59,20 +62,20 @@ public class HyperIDAPIKYC : HyperIDAPIBase {
 			let (data, response) = try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			if data.count > 0 {
 				guard let userKYCStatusTopLevelInfoResponse = try? JSONDecoder().decode(UserKYCStatusTopLevelInfoResponse.self, from: data) else {
-					throw HyperIDAPIBaseError.serverMaintenance
+					throw HyperIDBaseAPIError.serverMaintenance
 				}
 				return try userKYCStatusTopLevelInfoResponse.factoryUserKYCTopLevelInfo()
 			} else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error.localizedDescription)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error.localizedDescription)")
 		}
 	}
 }

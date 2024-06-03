@@ -3,17 +3,17 @@ import Foundation
 //**************************************************************************************************
 //	MARK: HyperIDResponseBase
 //--------------------------------------------------------------------------------------------------
-protocol HyperIDResponseBase : Validatable {
+public protocol HyperIDResponseBase : Validatable {
 	var result	: Validatable { get }
 }
 //**************************************************************************************************
 //	MARK: HyperIdResponseBase - impl
 //--------------------------------------------------------------------------------------------------
-extension HyperIDResponseBase {
+public extension HyperIDResponseBase {
 	//==================================================================================================
 	//	validate
 	//--------------------------------------------------------------------------------------------------
-	public func validate() throws {
+	func validate() throws {
 		try result.validate()
 	}
 }

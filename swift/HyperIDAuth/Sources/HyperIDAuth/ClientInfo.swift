@@ -8,6 +8,7 @@ public struct ClientInfo {
 	public let	clientId				: String
 	public let	redirectURL				: String
 	public let	authorizationMethod		: AuthorizationMethod
+	public let	scopes					: [String]?
 	
 	//**************************************************************************************************
 	//	MARK: AuthorizationMethod
@@ -35,10 +36,11 @@ public struct ClientInfo {
 	//==================================================================================================
 	//	init
 	//--------------------------------------------------------------------------------------------------
-	public init(clientId: String, redirectURL: String, authorizationMethod: AuthorizationMethod) {
-		self.clientId = clientId
-		self.redirectURL = redirectURL
-		self.authorizationMethod = authorizationMethod
+	public init(clientId: String, redirectURL: String, authorizationMethod: AuthorizationMethod, scopes: [String]? = nil) {
+		self.clientId				= clientId
+		self.redirectURL			= redirectURL
+		self.authorizationMethod	= authorizationMethod
+		self.scopes					= scopes
 	}
 	//==================================================================================================
 	//	isValid
@@ -71,7 +73,7 @@ public struct ClientInfo {
 				let signedJWT = try jwt.sign(using: signer)
 				authorizationParameters += "client_assertion=\(signedJWT)&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
 			} catch {
-				throw HyperIDAPIAuthError.assertionTokenSignError(description: error.localizedDescription)
+				throw HyperIDAuthAPIError.assertionTokenSignError(description: error.localizedDescription)
 			}
 		case .clientRS256(let privateKey):
 			let signer = JWTSigner.rs256(privateKey: privateKey)
@@ -80,7 +82,7 @@ public struct ClientInfo {
 				let signedJWT = try jwt.sign(using: signer)
 				authorizationParameters += "client_assertion=\(signedJWT)&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
 			} catch {
-				throw HyperIDAPIAuthError.assertionTokenSignError(description: error.localizedDescription)
+				throw HyperIDAuthAPIError.assertionTokenSignError(description: error.localizedDescription)
 			}
 		}
 		return authorizationParameters

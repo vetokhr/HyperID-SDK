@@ -1,18 +1,20 @@
 import XCTest
-import HyperIDSDK
+import HyperIDAuth
 
 //**************************************************************************************************
-//	HyperIDSDKAuthSecretTest
+//	HyperIDSDKAuthSecretHS256Test
 //--------------------------------------------------------------------------------------------------
-final class HyperIDSDKAuthSecretTest: HyperIDSDKAuthTestBase {
+final class HyperIDSDKAuthHS256Test: HyperIDSDKAuthTestBase {
 	//==================================================================================================
 	//	FactoryHyperIDSDKAuth
 	//--------------------------------------------------------------------------------------------------
-	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAPIAuth {
-		try await HyperIDAPIAuth(clientInfo:	ClientInfo(clientId: 			"android-sdk-test",
+	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAuthAPI {
+		try await HyperIDAuthAPI(clientInfo:	ClientInfo(clientId: 			"android-sdk-test-hs",
 														   redirectURL:			"https://localhost:4200",
-														   authorizationMethod:	.clientSecret(secret:	"3Sn8mPtwpaitbeTRJ9mcDNoR15kEzF9L")),
-								 providerInfo:	ProviderInfo.stage)
+														   authorizationMethod:	.clientHS256(secret:	"c9prKcovIJdEzofVe2tNgZlwW3rSDEdF")),
+								 refreshTokenUpdateCallback: { refreshToken in
+		},
+								 providerInfo:	ProviderInfo.sandbox)
 	}
 	//==================================================================================================
 	//	testStartSignInWeb2
@@ -53,13 +55,13 @@ final class HyperIDSDKAuthSecretTest: HyperIDSDKAuthTestBase {
 	//	testExchangeToTokens
 	//--------------------------------------------------------------------------------------------------
 	func testExchangeToTokens() async throws {
-		let redirectURL = "https://localhost:4200/?locale=en&session_state=da84ab9b-71c5-4410-8d58-ed07e199bb98&code=429af9cf-b6d9-42ed-a3e8-4ee798fe50de.da84ab9b-71c5-4410-8d58-ed07e199bb98.e75e8ad5-37aa-40dd-af4f-31139d82d94b.0"
+		let redirectURL = "https://localhost:4200/?locale=en&session_state=73f78a78-9d12-4f2d-bccf-4d600df63d6b&code=b4db352f-87ff-491c-ba5a-6aea2a47ea6b.73f78a78-9d12-4f2d-bccf-4d600df63d6b.e75e8ad5-37aa-40dd-af4f-31139d82d94b.0"
 		try await hyperIdAuth.exchangeToTokens(redirectURL: URL(string: redirectURL)!)
 		let accessToken = hyperIdAuth.accessToken
 		let refreshToken = hyperIdAuth.refreshToken
 		let userInfo = try await hyperIdAuth.getUserInfo()
 		print("[HyperIDSDKAuthSecretTest][testAuthorizationStartWithIdentityProvider] accessToken:\(accessToken ?? "[fail]")\nrefreshToken:\(refreshToken ?? "[fail]")")
-		print(userInfo)
+		print("\(userInfo)")
 		XCTAssert(hyperIdAuth.isAuthorized)
 	}
 }

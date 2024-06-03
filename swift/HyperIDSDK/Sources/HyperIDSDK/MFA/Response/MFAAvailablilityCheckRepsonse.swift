@@ -1,4 +1,5 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
 //	MARK: MFAAvailablilityCheckRepsonse
@@ -57,16 +58,16 @@ struct MFAAvailablilityCheckRepsonse : HyperIDResponseBase, Codable {
 		func validate() throws {
 			switch self {
 			case .unsupported(code: _):
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .success:
 				return
 			case .failByServiceTemporaryNotValid,
 				 .failByInvalidParameters:
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .failByAccessDenied,
 				 .failByTokenExpired,
 				 .failByTokenInvalid:
-				throw HyperIDAPIBaseError.invalidAccessToken
+				throw HyperIDBaseAPIError.invalidAccessToken
 			}
 		}
 	}

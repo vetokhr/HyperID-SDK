@@ -1,9 +1,9 @@
 import Foundation
 
 //**************************************************************************************************
-//	MARK: HyperIDAPIMFAError
+//	MARK: HyperIDMFAAPIError
 //--------------------------------------------------------------------------------------------------
-public enum HyperIDAPIMFAError : HyperIDSDKErrorProtocol {
+public enum HyperIDMFAAPIError : HyperIDErrorProtocol {
 	case controlCodeInvalidValue
 	case hyperIDAuthenticatorNotAttached
 	case MFATransactionNotFound

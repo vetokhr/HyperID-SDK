@@ -1,9 +1,10 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
-//	HyperIDAPIStorage
+//	HyperIDStorageAPI
 //--------------------------------------------------------------------------------------------------
-public class HyperIDAPIStorage : HyperIDAPIBase {
+public class HyperIDStorageAPI : HyperIDBaseAPI {
 	//==================================================================================================
 	//	init
 	//--------------------------------------------------------------------------------------------------
@@ -15,10 +16,39 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 	//==================================================================================================
 	//	getUserKeysList
 	//--------------------------------------------------------------------------------------------------
+	public func getUserWallets(accessToken	: String) async throws -> (walletsPrivate: [Wallet], walletsPublic: [Wallet])
+	{
+		if accessToken.isEmpty {
+			throw HyperIDBaseAPIError.invalidAccessToken
+		}
+		let urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent("/user-wallets/get"),
+																  accessToken: accessToken)
+		do {
+			let (data, response)	= try await urlSession.data(for: urlRequest)
+			guard let httpResponse = response as? HTTPURLResponse,
+				  (200..<300).contains(httpResponse.statusCode) else {
+				throw HyperIDBaseAPIError.serverMaintenance
+			}
+			guard let userWalletsGetResponse = try? JSONDecoder().decode(StorageUserWalletsGetResponse.self, from: data) else {
+				throw HyperIDBaseAPIError.serverMaintenance
+			}
+			try userWalletsGetResponse.validate()
+			return (walletsPrivate: userWalletsGetResponse.walletsPrivate, walletsPublic: userWalletsGetResponse.walletsPublic)
+		} catch let error as HyperIDBaseAPIError {
+			throw error
+		} catch let error as HyperIDStorageAPIError {
+			throw error
+		} catch {
+			throw HyperIDBaseAPIError.networkingError(description: "\(error)")
+		}
+	}
+	//==================================================================================================
+	//	getUserKeysList
+	//--------------------------------------------------------------------------------------------------
 	public func getUserKeysList(storage:		HyperIDStorage,
 								accessToken:	String) async throws -> (keysPrivate: [String], keysPublic: [String]) {
 		if accessToken.isEmpty {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent(storage.userDataKeysListGetEndpointSuffix),
 																  accessToken: accessToken)
@@ -27,15 +57,15 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 			let (data, response)	= try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			return try storage.processUserDataKeysListGetResponseData(data: data)
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
-		} catch let error as HyperIDAPIStorageError {
+		} catch let error as HyperIDStorageAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: "\(error)")
+			throw HyperIDBaseAPIError.networkingError(description: "\(error)")
 		}
 	}
 	//==================================================================================================
@@ -44,7 +74,7 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 	public func getUserSharedKeysList(storage:		HyperIDStorage,
 									  accessToken:	String) async throws -> [String] {
 		if accessToken.isEmpty {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
 		var searchId : String?
 		var result : [String] = []
@@ -56,17 +86,17 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 				let (data, response)	= try await urlSession.data(for: urlRequest)
 				guard let httpResponse = response as? HTTPURLResponse,
 					  (200..<300).contains(httpResponse.statusCode) else {
-					throw HyperIDAPIBaseError.serverMaintenance
+					throw HyperIDBaseAPIError.serverMaintenance
 				}
 				let queryResullt = try storage.processUserDataSharedKeysListGetResponseData(data: data)
 				searchId = queryResullt.nextSearchId
 				result.append(contentsOf: queryResullt.keys)
-			} catch let error as HyperIDAPIBaseError {
+			} catch let error as HyperIDBaseAPIError {
 				throw error
-			} catch let error as HyperIDAPIStorageError {
+			} catch let error as HyperIDStorageAPIError {
 			 throw error
 			} catch {
-			 throw HyperIDAPIBaseError.networkingError(description: "\(error)")
+			 throw HyperIDBaseAPIError.networkingError(description: "\(error)")
 			}
 		} while searchId != nil
 		return result
@@ -79,9 +109,9 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 							storage		: HyperIDStorage,
 							accessToken : String) async throws {
 		if accessToken.isEmpty {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
-		guard !value.key.isEmpty else { throw HyperIDAPIStorageError.keyInvalid }
+		guard !value.key.isEmpty else { throw HyperIDStorageAPIError.keyInvalid }
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent(storage.userDataValueSetEndpointSuffix),
 																  accessToken: accessToken)
 		do {
@@ -89,15 +119,15 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 			let (data, response)	= try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try storage.processUserDataValueSetResponseData(data: data)
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
-		} catch let error as HyperIDAPIStorageError {
+		} catch let error as HyperIDStorageAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: error.localizedDescription)
+			throw HyperIDBaseAPIError.networkingError(description: error.localizedDescription)
 		}
 	}
 	//==================================================================================================
@@ -107,9 +137,9 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 							storage		: HyperIDStorage,
 							accessToken	: String) async throws -> String? {
 		if accessToken.isEmpty {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
-		guard !key.isEmpty else { throw HyperIDAPIStorageError.keyInvalid }
+		guard !key.isEmpty else { throw HyperIDStorageAPIError.keyInvalid }
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent(storage.userDataValueGetEndpointSuffix),
 																  accessToken: accessToken)
 		do {
@@ -117,15 +147,15 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 			let (data, response)	= try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			return try storage.processUserDataValueGetResponseData(data: data)
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
-		} catch let error as HyperIDAPIStorageError {
+		} catch let error as HyperIDStorageAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: error.localizedDescription)
+			throw HyperIDBaseAPIError.networkingError(description: error.localizedDescription)
 		}
 	}
 	//==================================================================================================
@@ -135,9 +165,9 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 							   storage		: HyperIDStorage,
 							   accessToken	: String) async throws {
 		if accessToken.isEmpty {
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		}
-		guard !key.isEmpty else { throw HyperIDAPIStorageError.keyInvalid }
+		guard !key.isEmpty else { throw HyperIDStorageAPIError.keyInvalid }
 		var urlRequest = HyperIDRequestUtils.constructBaseRequest(openIDConfiguration.restApiTokenEndpoint.appendingPathComponent(storage.userDataValueDeleteEndpointSuffix),
 																  accessToken: accessToken)
 		do {
@@ -145,15 +175,15 @@ public class HyperIDAPIStorage : HyperIDAPIBase {
 			let (data, response)	= try await urlSession.data(for: urlRequest)
 			guard let httpResponse = response as? HTTPURLResponse,
 				  (200..<300).contains(httpResponse.statusCode) else {
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			}
 			try storage.processUserDataValueDeleteResponseData(data: data)
-		} catch let error as HyperIDAPIBaseError {
+		} catch let error as HyperIDBaseAPIError {
 			throw error
-		} catch let error as HyperIDAPIStorageError {
+		} catch let error as HyperIDStorageAPIError {
 			throw error
 		} catch {
-			throw HyperIDAPIBaseError.networkingError(description: error.localizedDescription)
+			throw HyperIDBaseAPIError.networkingError(description: error.localizedDescription)
 		}
 	}
 }

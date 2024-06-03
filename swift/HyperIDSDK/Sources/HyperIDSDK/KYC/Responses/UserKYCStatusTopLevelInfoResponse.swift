@@ -1,4 +1,6 @@
 import Foundation
+import HyperIDBase
+import HyperIDAuth
 
 //**************************************************************************************************
 //	MARK: UserKYCStatusTopLevelInfoResponse
@@ -92,16 +94,16 @@ struct UserKYCStatusTopLevelInfoResponse : HyperIDResponseBase, Codable {
 		public func validate() throws {
 			switch self {
 			case .unsupported(code: _):
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .success:
 				return
 			case .failByTokenInvalid,
 				 .failByTokenExpired,
 				 .failByAccessDenied:
-				throw HyperIDAPIBaseError.invalidAccessToken
+				throw HyperIDBaseAPIError.invalidAccessToken
 			case .failByInvalidParameters,
 				 .failByServiceTemporaryUnavailable:
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .failByBilling,
 				 .failByUserKYCDeleted:
 				return

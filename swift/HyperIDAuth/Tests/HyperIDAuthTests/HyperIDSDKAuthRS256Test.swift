@@ -1,18 +1,35 @@
 import XCTest
-import HyperIDSDK
+import HyperIDAuth
 
 //**************************************************************************************************
-//	HyperIDSDKAuthSecretHS256Test
+//	HyperIDSDKAuthRS256Test
 //--------------------------------------------------------------------------------------------------
-final class HyperIDSDKAuthHS256Test: HyperIDSDKAuthTestBase {
+final class HyperIDSDKAuthRS256Test: HyperIDSDKAuthTestBase {
 	//==================================================================================================
 	//	FactoryHyperIDSDKAuth
 	//--------------------------------------------------------------------------------------------------
-	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAPIAuth {
-		try await HyperIDAPIAuth(clientInfo:	ClientInfo(clientId: 			"android-sdk-test-hs",
-														   redirectURL:			"https://localhost:4200",
-														   authorizationMethod:	.clientHS256(secret:	"c9prKcovIJdEzofVe2tNgZlwW3rSDEdF".data(using: .utf8)!)),
-								 providerInfo:	ProviderInfo.stage)
+	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAuthAPI {
+		let certName = "rs256Certificate"
+		let bundle = Bundle(for: HyperIDSDKAuthRS256Test.self)
+		let path = bundle.path(forResource: "rs256Certificate", ofType: "p12")
+		let p12Data : NSData = try! NSData(contentsOf: NSURL(fileURLWithPath: path!) as URL)
+		let options : NSDictionary = [kSecImportExportPassphrase : "111111"]
+		var pkRef : SecKey? = nil
+		var items : CFArray?
+		let error = SecPKCS12Import(p12Data, options, &items)
+		guard let items = items, error == noErr, CFArrayGetCount(items) > 0 else { throw HyperIDAuthAPIError.invalidClientInfo() }
+		let array = items as [AnyObject] as NSArray
+		let dictionary = array[0] as! NSDictionary
+		let secIdentity = dictionary[kSecImportItemIdentity] as! SecIdentity
+		let errorIdentitiyKeyGet = SecIdentityCopyPrivateKey(secIdentity,&pkRef)
+		var err : Unmanaged<CFError>?
+		let keyData = SecKeyCopyExternalRepresentation(pkRef!, &err)! as Data
+		return try await HyperIDAuthAPI(clientInfo:		ClientInfo(clientId: 			"android-sdk-test-rsa",
+																   redirectURL:			"https://localhost:4200",
+																   authorizationMethod:	.clientRS256(privateKey: keyData)),
+										refreshTokenUpdateCallback: { refreshToken in
+		},
+										providerInfo:	ProviderInfo.sandbox)
 	}
 	//==================================================================================================
 	//	testStartSignInWeb2
@@ -58,8 +75,7 @@ final class HyperIDSDKAuthHS256Test: HyperIDSDKAuthTestBase {
 		let accessToken = hyperIdAuth.accessToken
 		let refreshToken = hyperIdAuth.refreshToken
 		let userInfo = try await hyperIdAuth.getUserInfo()
-		print("[HyperIDSDKAuthSecretTest][testAuthorizationStartWithIdentityProvider] accessToken:\(accessToken ?? "[fail]")\nrefreshToken:\(refreshToken ?? "[fail]")")
-		print("\(userInfo)")
+		print("[HyperIDSDKAuthSecretTest][testAuthorizationStartWithIdentityProvider] accessToken:\(accessToken)\nrefreshToken:\(refreshToken)")
 		XCTAssert(hyperIdAuth.isAuthorized)
 	}
 }

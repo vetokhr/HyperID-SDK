@@ -2,49 +2,37 @@ import Foundation
 import HyperIDBase
 
 //**************************************************************************************************
-//	MARK: MFATransactionStatusResponse
+//	MARK: StorageUserWalletsGetResponse
 //--------------------------------------------------------------------------------------------------
-struct MFATransactionStatusResponse : HyperIDResponseBase, Codable {
-	private var	requestResultRaw	: Int64
-	private var	statusRaw			: Int64?
-	private var	completeResult		: Int64?
+struct StorageUserWalletsGetResponse : HyperIDResponseBase, Codable {
+	private var	requestResultRaw 	: Int64
+	var			walletsPrivate		: [Wallet]
+	var			walletsPublic		: [Wallet]
 	
-	private var	requestResult		: Result				{ Result(rawValue: requestResultRaw)	}
-	var			result				: Validatable			{ requestResult							}
-	var			status				: MFATransactionStatus?	{
-		switch requestResult {
-		case .success:
-			MFATransactionStatus(rawValue: statusRaw!, completeResult: MFACompleteResult(rawValue:completeResult))
-		default:
-			nil
-		}
-	}
+	private var	requestResult		: Result		{ Result(rawValue: requestResultRaw)	}
+	var			result				: Validatable	{ requestResult							}
+
 	//**************************************************************************************************
-	//	MARK: MFATransactionStatusResponse.CodingKeys
+	//	MARK: StorageUserWalletsGetResponse.CodingKeys
 	//--------------------------------------------------------------------------------------------------
 	enum CodingKeys : String, CodingKey {
 		case requestResultRaw	= "result"
-		case statusRaw			= "transaction_status"
-		case completeResult		= "transaction_complete_result"
+		case walletsPrivate		= "wallets_private"
+		case walletsPublic		= "wallets_public"
 	}
-	//==================================================================================================
-	//	validate
-	//--------------------------------------------------------------------------------------------------
-	func validate()	throws	{ try result.validate() }
 	//**************************************************************************************************
-	//	MARK: MFATransactionStatusResponse.Result
+	//	MARK: StorageUserWalletsGetResponse.Result
 	//--------------------------------------------------------------------------------------------------
 	private enum Result : Validatable {
 		case unsupported(code: Int64)
 		
 		case success
+		case failByTokenInvalid
+		case failByTokenExpired
+		case failByAccessDenied
 		case failByServiceTemporaryNotValid
 		case failByInvalidParameters
-		case failByAccessDenied
-		case failByTokenExpired
-		case failByTokenInvalid
-		case failByTransactionNotFound
-		
+
 		//==================================================================================================
 		//	init
 		//--------------------------------------------------------------------------------------------------
@@ -53,17 +41,15 @@ struct MFATransactionStatusResponse : HyperIDResponseBase, Codable {
 			case 0:
 				self = .success
 			case -1:
-				self = .failByServiceTemporaryNotValid
+				self = .failByTokenInvalid
 			case -2:
-				self = .failByInvalidParameters
+				self = .failByTokenExpired
 			case -3:
 				self = .failByAccessDenied
 			case -4:
-				self = .failByTokenExpired
+				self = .failByServiceTemporaryNotValid
 			case -5:
-				self = .failByTokenInvalid
-			case -6:
-				self = .failByTransactionNotFound
+				self = .failByInvalidParameters
 			default:
 				self = .unsupported(code: rawValue)
 			}
@@ -84,8 +70,6 @@ struct MFATransactionStatusResponse : HyperIDResponseBase, Codable {
 				 .failByTokenExpired,
 				 .failByTokenInvalid:
 				throw HyperIDBaseAPIError.invalidAccessToken
-			case .failByTransactionNotFound:
-				return
 			}
 		}
 	}

@@ -1,11 +1,12 @@
 import XCTest
-import HyperIDSDK
+import HyperIDAuth
+import HyperIDBase
 
 //**************************************************************************************************
 //	HyperIDSDKAuthTestsInit
 //--------------------------------------------------------------------------------------------------
 class HyperIDSDKAuthTestBase: XCTestCase {
-	var hyperIdAuth : HyperIDAPIAuth!
+	var hyperIdAuth : HyperIDAuthAPI!
 	//==================================================================================================
 	//	setUpWithError
 	//--------------------------------------------------------------------------------------------------
@@ -36,5 +37,5 @@ class HyperIDSDKAuthTestBase: XCTestCase {
 	//==================================================================================================
 	//	FactoryHyperIDAPIAuth
 	//--------------------------------------------------------------------------------------------------
-	func FactoryHyperIDAPIAuth() async throws -> HyperIDAPIAuth { fatalError() }
+	func FactoryHyperIDAPIAuth() async throws -> HyperIDAuthAPI { fatalError() }
 }

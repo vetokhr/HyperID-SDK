@@ -11,6 +11,7 @@ struct ClientView: View {
 	@State private var isUserInfoPresented				: Bool = false
 	@State private var isKYCStatusInfoPresented			: Bool = false
 	@State private var isKYCStatusTopLevelInfoPresented	: Bool = false
+	@State private var isUserWalletsViewPresented		: Bool = false
 	@State private var isStorageKeysViewPresesnted		: Bool = false
 	
 	@State private var mfaQuestion						: String = ""
@@ -82,6 +83,15 @@ struct ClientView: View {
 					.navigationTitle("Storage keys")
 			}
 		}
+		.sheet(isPresented: $isUserWalletsViewPresented, content: {
+			NavigationView {
+				VStack {
+					UserWalletsView(walletsPublic:	clientController.walletsPublic,
+									walletsPrivate:	clientController.walletsPrivate)
+				}
+					.navigationTitle("Storage keys")
+			}
+		})
 	}
 	//==================================================================================================
 	//	sectionSignIn
@@ -109,9 +119,9 @@ struct ClientView: View {
 				Text("SignIn GuestUpgrade")
 			})
 			Button(action: {
-				clientController.signInWithApple()
+				clientController.signInWithGoogle()
 			}, label: {
-				Text("SignIn with AppleID")
+				Text("SignIn with Google")
 			})
 		}
 	}
@@ -226,7 +236,7 @@ struct ClientView: View {
 		case 2:
 			return .wallet(address: walletAddress)
 		case 3:
-			return .identityProvider(.apple)
+			return .identityProvider("apple")
 		default:
 			fatalError()
 		}
@@ -236,6 +246,14 @@ struct ClientView: View {
 	//--------------------------------------------------------------------------------------------------
 	var sectionStorage : some View {
 		Section(header: Text("Storage")) {
+			Button(action: {
+				Task {
+					await clientController.getUserWallets()
+					isUserWalletsViewPresented = true
+				}
+			}, label: {
+				Text("Load user wallets")
+			})
 			Picker("Select storage", selection: $selectedStorageIndex) {
 				ForEach(0..<4) {
 					Text(storages[$0]).tag($0)

@@ -1,4 +1,5 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
 //	StorageUserDataValueDeleteResponse
@@ -60,16 +61,16 @@ enum StorageUserDataDeleteResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success, .successNotFound:
 			return
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 			 .failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 	}
 }
@@ -119,19 +120,19 @@ enum StorageWalletUserDataDeleteResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success,
 			 .successNotFound:
 			return
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 				.failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .failByWalletNotExists:
-			throw HyperIDAPIStorageError.walletNotExists
+			throw HyperIDStorageAPIError.walletNotExists
 		}
 	}
 }
@@ -181,18 +182,18 @@ enum StorageIdentityProviderUserDataDeleteResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success, .successNotFound:
 			return
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 				.failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .failByIdentityProviderNotFound:
-			throw HyperIDAPIStorageError.identityProviderNotFound
+			throw HyperIDStorageAPIError.identityProviderNotFound
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import XCTest
-import HyperIDSDK
+import HyperIDAuth
 
 //**************************************************************************************************
 //	HyperIDSDKAuthAccountTest
@@ -8,10 +8,13 @@ final class HyperIDSDKAuthAccountTest: HyperIDSDKAuthTestBase {
 	//==================================================================================================
 	//	FactoryHyperIDSDKAuth
 	//--------------------------------------------------------------------------------------------------
-	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAPIAuth {
-		return try await HyperIDAPIAuth(clientInfo:		ClientInfo(clientId: 			"android-sdk-test",
-																   redirectURL:			"https://localhost:4200",
-																   authorizationMethod:	.clientSecret(secret:	"3Sn8mPtwpaitbeTRJ9mcDNoR15kEzF9L")),
+	override func FactoryHyperIDAPIAuth() async throws -> HyperIDAuthAPI {
+		return try await HyperIDAuthAPI(clientInfo:		ClientInfo(clientId: 			"HyperID-Authenticator",
+																   redirectURL:			"oauth.com.hyperid.client://localhost:4200/auth/hyper-id/callback",
+																   authorizationMethod:	.clientSecret(secret:	"1056f934-40b0-49bc-8777-aaafdf74dc49")),
+										refreshTokenUpdateCallback: { refreshToken in
+			
+		},
 										providerInfo:	ProviderInfo.stage)
 	}
 	//==================================================================================================

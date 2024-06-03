@@ -13,7 +13,7 @@ public enum HyperIDSDKError : Error {
 extension HyperIDSDKError : LocalizedError {
 	public var errorDescription: String? {
 		switch self {
-		case .authorizationExpired:	"HyperID authorization expired. Please authorize yourself."
+		case .authorizationExpired:				"HyperID authorization expired. Please authorize yourself."
 		}
 	}
 }

@@ -77,7 +77,7 @@ let url = try hyperIdSDK.startSignInWeb3(kycVerificationLevel: .full)
 let url = try hyperIdSDK.startSignInUsingWallet()
 //you can specify wallet onwership check. Btw we're support not only ethereum network.
 let url = try hyperIdSDK.startSignInUsingWallet(walletGetMode:	.walletGetFull,
-					       	walletFamily:	.solana)
+					       	walletFamily:	1)
 ```
 4. You can upgrade `guest` account using this SDK:
 ```Swift
@@ -85,11 +85,21 @@ let url = try hyperIdSDK.startSignInGuestUpgrade()
 ```
 5. Or select identity provider like `Google` or `AppleID`
 ```Swift
-let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider: .google)
+let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider: "google")
 //KYC cheat works here too.
-let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider:		.google
+let url = try hyperIdSDK.startSignInIdentityProvider(identityProvider: "google"
 						     kycVerificationLevel:	.full)
 ```
+6. Or sign in only after transaction completing
+```Swift
+let url = try hyperIdSDK.startSignInWithTransaction(from:	"0x43D192d3eC9CaEFbc92385bGD3508d87E566595f",
+                                                    to:		"0x0AeB980AB115E45409D9bA31CCffcc75995E3dfA",
+                                                    chain:	"11155111",
+                                                    data:	"0x0",
+                                                    nonce:	"0",
+                                                    value:	"0x1")
+```
+
 The single step you need to do is to start authorization. We recomend you to use `AuthenticationServices` to protect user privacy [or you are free to implement your own web view]. Complete it in our SDK and continue the work.
 
 ```Swift
@@ -103,6 +113,8 @@ let authSession = ASWebAuthenticationSession(url:		authURL,
 	if let redirectURL = redirectURL {
 		Task {
 			try await self.hyperIDSDK.completeSignIn(redirectURL: redirectURL)
+			//or if you wanna complete auth after transaction completing [use only one of them]
+			try await self.hyperIDSDK.completeSignInWithTransaction(redirectURL: redirectURL)
 		}
 	}
 })
@@ -144,13 +156,13 @@ If you want to authorize some user actions use HyperID MFA API.
 	let mfaTransactionId	= try await hyperIDSDK.startMFATransaction(question:	question,
 									   controlCode: controlCode!)
 	return
-} catch HyperIDAPIMFAError.controlCodeInvalidValue {
+} catch HyperIDMFAAPIError.controlCodeInvalidValue {
 	// use 2 symbol control code, dont make user's life harder			
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
  ```
@@ -165,9 +177,9 @@ do {
 	}
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again		
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -192,15 +204,15 @@ Sometimes you need to already sended to user transaction. You can do this using 
 ```Swift
 do {
 	try await hyperIDSDK.cancelMFATransaction(transactionId: mfaTransactionId!)
-} catch HyperIDAPIMFAError.MFATransactionNotFound {
+} catch HyperIDMFAAPIError.MFATransactionNotFound {
 	// transaction not found. Have you really started it?
-} catch HyperIDAPIMFAError.MFATransactionAlreadyCompleted {
+} catch HyperIDMFAAPIError.MFATransactionAlreadyCompleted {
 	// transaction completed no way to cancel
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -226,9 +238,9 @@ do {
 	let kycStatusTopLevelInfo = try await hyperIDSDK.getUserKYCStatusTopLevelInfo()
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -270,14 +282,28 @@ do {
 	let ycStatusInfo = try await hyperIDSDK.getUserKYCStatusInfo(kycVerificationLevel: .basic/*.full*/)
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
 
 ## Storage
+
+Get user's wallet list for your transactions
+
+```Swift
+do {
+	let wallets = try await hyperIdSDK.getUserWallets()
+} catch HyperIDSDKError.authorizationExpired {
+	// Oops! authorization expired. Please complete it again and try to send request again
+} catch HyperIDBaseAPIError.serverMaintenance {
+	// HyperID isn't available yet. Please wait. We're making awersome update
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
+	// Oops. Some device networking errors. See description.
+}
+```
 
 Store and share(if needed) user depend data to the HyperID to more than 4 types of storages: `.userId`, `.email`, `.wallet`, `.identityProvider`. 
 > **Pay attention:** Every kind of storage connected some identifier:
@@ -293,7 +319,7 @@ public enum HyperIDStorageType {
 	case email
 	case userID
 	case wallet(address: String)
-	case identityProvider(_: IdentityProvider)
+	case identityProvider(_ identityProvider : String)
 }
 ```
 
@@ -305,19 +331,19 @@ do {
 	try await hyperIDSDK.setUserData((key: key, value: value),
 					 dataScope:	.private,
 					 storage:	.userId)
-} catch HyperIDAPIStorageError.keyInvalid {
+} catch HyperIDStorageAPIError.keyInvalid {
 	// Key invalid. Is it empty?
-} catch HyperIDAPIStorageError.keyAccessDenied {
+} catch HyperIDStorageAPIError.keyAccessDenied {
 	// Attempt to edit shared by other client public value
-} catch HyperIDAPIStorageError.identityProviderNotFound {
+} catch HyperIDStorageAPIError.identityProviderNotFound {
 	// Unsupported identity provider or no attached accounts with this provider
-} catch HyperIDAPIStorageError.walletNotExists {
+} catch HyperIDStorageAPIError.walletNotExists {
 	// Wallet address isn't connected with this HyperID account or invalid
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -330,15 +356,15 @@ do {
 	if let value = value {
 		//value not found
 	}
-} catch HyperIDAPIStorageError.identityProviderNotFound {
+} catch HyperIDStorageAPIError.identityProviderNotFound {
 	// Unsupported identity provider or no attached accounts with this provider		
-} catch HyperIDAPIStorageError.walletNotExists {
+} catch HyperIDStorageAPIError.walletNotExists {
 	// Wallet address isn't connected with this HyperID account or invalid
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -348,15 +374,15 @@ do {
 ```Swift
 do {
 	try await hyperIDSDK.deleteUserData(key, storage: storage)
-} catch HyperIDAPIStorageError.identityProviderNotFound {
+} catch HyperIDStorageAPIError.identityProviderNotFound {
 	// Unsupported identity provider or no attached accounts with this provider		
-} catch HyperIDAPIStorageError.walletNotExists {
+} catch HyperIDStorageAPIError.walletNotExists {
 	// Wallet address isn't connected with this HyperID account or invalid
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -366,15 +392,15 @@ do {
 ```Swift
 do {
 	let (keysPrivate: keysPrivate, keysPublic: keysPublic) = try await hyperIDSDK.getUserKeysList(storage: storage)
-} catch HyperIDAPIStorageError.identityProviderNotFound {
+} catch HyperIDStorageAPIError.identityProviderNotFound {
 	// Unsupported identity provider or no attached accounts with this provider		
-} catch HyperIDAPIStorageError.walletNotExists {
+} catch HyperIDStorageAPIError.walletNotExists {
 	// Wallet address isn't connected with this HyperID account or invalid
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```
@@ -384,15 +410,15 @@ do {
 ```Swift
 do {
 	clientSharedKeys = try await hyperIDSDK.getUserSharedKeysList(storage: storage)
-} catch HyperIDAPIStorageError.identityProviderNotFound {
+} catch HyperIDStorageAPIError.identityProviderNotFound {
 	// Unsupported identity provider or no attached accounts with this provider		
-} catch HyperIDAPIStorageError.walletNotExists {
+} catch HyperIDStorageAPIError.walletNotExists {
 	// Wallet address isn't connected with this HyperID account or invalid
 } catch HyperIDSDKError.authorizationExpired {
 	// Oops! authorization expired. Please complete it again and try to send request again
-} catch HyperIDAPIBaseError.serverMaintenance {
+} catch HyperIDBaseAPIError.serverMaintenance {
 	// HyperID isn't available yet. Please wait. We're making awersome update
-} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 	// Oops. Some device networking errors. See description.
 }
 ```

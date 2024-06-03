@@ -21,6 +21,9 @@ class ClientController : NSObject, ObservableObject {
 	@Published var controlCode				: Int?
 	@Published var mfaTransactionStatus		: MFATransactionStatus?
 	
+	@Published var walletsPublic			: [Wallet]?
+	@Published var walletsPrivate			: [Wallet]?
+	
 	@Published var clientPrivateKeys		: [String]?
 	@Published var clientPublicKeys			: [String]?
 	@Published var clientSharedKeys			: [String]?
@@ -45,7 +48,7 @@ class ClientController : NSObject, ObservableObject {
 	func signInWeb2() {
 		do {
 			runAuthSession(authURL: try hyperIDSDK.startSignInWeb2())
-		} catch HyperIDAPIBaseError.invalidKYCVerificationLevel {
+		} catch HyperIDBaseAPIError.invalidKYCVerificationLevel {
 			alertState.title	= "Fatal error"
 			alertState.message	= "Invalid KYC Verifcation Level"
 			alertState.isActive	= true
@@ -61,7 +64,7 @@ class ClientController : NSObject, ObservableObject {
 	func signInWeb3() {
 		do {
 			runAuthSession(authURL: try hyperIDSDK.startSignInWeb3())
-		} catch HyperIDAPIBaseError.invalidKYCVerificationLevel {
+		} catch HyperIDBaseAPIError.invalidKYCVerificationLevel {
 			alertState.title	= "Fatal error"
 			alertState.message	= "Invalid KYC Verifcation Level"
 			alertState.isActive	= true
@@ -77,7 +80,7 @@ class ClientController : NSObject, ObservableObject {
 	func signInWithWallet() {
 		do {
 			runAuthSession(authURL: try hyperIDSDK.startSignInUsingWallet(walletGetMode: .walletGetFull))
-		} catch HyperIDAPIBaseError.invalidKYCVerificationLevel {
+		} catch HyperIDBaseAPIError.invalidKYCVerificationLevel {
 			alertState.title	= "Fatal error"
 			alertState.message	= "Invalid KYC Verifcation Level"
 			alertState.isActive	= true
@@ -93,7 +96,7 @@ class ClientController : NSObject, ObservableObject {
 	func signInGuestUpdgrade() {
 		do {
 			runAuthSession(authURL: try hyperIDSDK.startSignInGuestUpgrade())
-		} catch HyperIDAPIBaseError.invalidKYCVerificationLevel {
+		} catch HyperIDBaseAPIError.invalidKYCVerificationLevel {
 			alertState.title	= "Fatal error"
 			alertState.message	= "Invalid KYC Verifcation Level"
 			alertState.isActive	= true
@@ -104,15 +107,32 @@ class ClientController : NSObject, ObservableObject {
 		}
 	}
 	//==================================================================================================
-	//	signInWithApple
+	//	signInWithGoogle
 	//--------------------------------------------------------------------------------------------------
-	func signInWithApple() {
+	func signInWithGoogle() {
 		do {
-			runAuthSession(authURL: try hyperIDSDK.startSignInIdentityProvider(identityProvider: .apple))
-		} catch HyperIDAPIBaseError.invalidKYCVerificationLevel {
+			runAuthSession(authURL: try hyperIDSDK.startSignInIdentityProvider(identityProvider: "google"))
+		} catch HyperIDBaseAPIError.invalidKYCVerificationLevel {
 			alertState.title	= "Fatal error"
 			alertState.message	= "Invalid KYC Verifcation Level"
 			alertState.isActive	= true
+		} catch {
+			alertState.title	= "Unknown error"
+			alertState.message	= "\(error.localizedDescription)"
+			alertState.isActive	= true
+		}
+	}
+	//==================================================================================================
+	//	signInWithTransaction
+	//--------------------------------------------------------------------------------------------------
+	func signInWithTransaction() {
+		do {
+			runAuthSession(authURL: try hyperIDSDK.startSignInWithTransaction(from:		"0x43D192d3eC9CaEFbc92385bED8508d87E566595f",
+																			  to:		"0x0AeB980AB115E45409D9bA33CCffcc75995E3dfA",
+																			  chain:	"11155111",
+																			  data:		"0x0",
+																			  nonce:	"0",
+																			  value:	"0x1"))
 		} catch {
 			alertState.title	= "Unknown error"
 			alertState.message	= "\(error.localizedDescription)"
@@ -142,11 +162,11 @@ class ClientController : NSObject, ObservableObject {
 		Task {
 			do {
 				try await hyperIDSDK.signOut()
-			} catch HyperIDAPIBaseError.serverMaintenance {
+			} catch HyperIDBaseAPIError.serverMaintenance {
 				alertState.title	= "HyperID server maintenance"
 				alertState.message	= "Please try again later"
 				alertState.isActive	= true
-			} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+			} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 				alertState.title	= "Networking error"
 				alertState.message	= "Details: \(desc)"
 				alertState.isActive	= true
@@ -175,6 +195,27 @@ class ClientController : NSObject, ObservableObject {
 		authSession?.start()
 	}
 	//==================================================================================================
+	//	runAuthSession
+	//--------------------------------------------------------------------------------------------------
+	private func runAuthSessionWithTransaction(authURL: URL) {
+		authSession = ASWebAuthenticationSession(url:				authURL,
+												 callbackURLScheme:	"ai.hypersphere.hyperid",
+												 completionHandler:	{ redirectURL, error in
+			if let redirectURL = redirectURL {
+				Task {
+					try await self.hyperIDSDK.completeSignInWithTransaction(redirectURL: redirectURL)
+				}
+			} else if let error = error {
+				self.alertState.title		= "Auth error"
+				self.alertState.message		= "\(error)"
+				self.alertState.isActive	= true
+			}
+		})
+		authSession?.presentationContextProvider = self
+		authSession?.prefersEphemeralWebBrowserSession = true
+		authSession?.start()
+	}
+	//==================================================================================================
 	//	getUserKYCStatusInfo
 	//--------------------------------------------------------------------------------------------------
 	@MainActor func getUserKYCStatusInfo() async {
@@ -184,11 +225,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -208,11 +249,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -231,7 +272,7 @@ class ClientController : NSObject, ObservableObject {
 			mfaTransactionId		= try await hyperIDSDK.startMFATransaction(question: question, controlCode: controlCode!)
 			mfaTransactionStatus	= nil
 			return
-		} catch HyperIDAPIMFAError.controlCodeInvalidValue {
+		} catch HyperIDMFAAPIError.controlCodeInvalidValue {
 			alertState.title	= "Control code invalid"
 			alertState.message	= "Please check your code"
 			alertState.isActive	= true
@@ -239,11 +280,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -270,11 +311,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -293,14 +334,14 @@ class ClientController : NSObject, ObservableObject {
 			mfaTransactionId		= nil
 			controlCode				= nil
 			mfaTransactionStatus	= nil
-		} catch HyperIDAPIMFAError.MFATransactionNotFound {
+		} catch HyperIDMFAAPIError.MFATransactionNotFound {
 			alertState.title		= "MFA Transaction not found"
 			alertState.message		= "Transaction with id \(mfaTransactionId ?? -1) not found"
 			alertState.isActive		= true
 			mfaTransactionId		= nil
 			controlCode				= nil
 			mfaTransactionStatus	= nil
-		} catch HyperIDAPIMFAError.MFATransactionAlreadyCompleted {
+		} catch HyperIDMFAAPIError.MFATransactionAlreadyCompleted {
 			alertState.title	= "MFA Transaction already completed"
 			alertState.message	= "Transaction with id \(mfaTransactionId ?? -1) already completed"
 			alertState.isActive	= true
@@ -308,11 +349,37 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
+			alertState.title	= "Networking error"
+			alertState.message	= "\(desc)"
+			alertState.isActive	= true
+		} catch {
+			alertState.title	= "Unknown error"
+			alertState.message	= "\(error.localizedDescription)"
+			alertState.isActive	= true
+		}
+	}
+	//==================================================================================================
+	//	getUserWallets
+	//--------------------------------------------------------------------------------------------------
+	@MainActor func getUserWallets() async {
+		do {
+			let wallets = try await hyperIDSDK.getUserWallets()
+			walletsPublic = wallets.walletsPublic
+			walletsPrivate = wallets.walletsPrivate
+		} catch HyperIDSDKError.authorizationExpired {
+			alertState.title	= "Authorization expired"
+			alertState.message	= "Please sign in again"
+			alertState.isActive	= true
+		} catch HyperIDBaseAPIError.serverMaintenance {
+			alertState.title	= "HyperID server maintenance"
+			alertState.message	= "Please try again later"
+			alertState.isActive	= true
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -333,11 +400,11 @@ class ClientController : NSObject, ObservableObject {
 			let (keysPrivate: keysPrivate, keysPublic: keysPublic) = try await hyperIDSDK.getUserKeysList(storage: storage)
 			clientPrivateKeys	= keysPrivate
 			clientPublicKeys	= keysPublic
-		} catch HyperIDAPIStorageError.identityProviderNotFound {
+		} catch HyperIDStorageAPIError.identityProviderNotFound {
 			alertState.title	= "Unknown identity provider"
 			alertState.message	= "Please check provider availability in provider configuration"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.walletNotExists {
+		} catch HyperIDStorageAPIError.walletNotExists {
 			alertState.title	= "Wallet not found"
 			alertState.message	= "Wallet not found or not attached to the HyperID account"
 			alertState.isActive	= true
@@ -345,11 +412,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -368,11 +435,11 @@ class ClientController : NSObject, ObservableObject {
 		clientSharedKeys	= nil
 		do {
 			clientSharedKeys = try await hyperIDSDK.getUserSharedKeysList(storage: storage)
-		} catch HyperIDAPIStorageError.identityProviderNotFound {
+		} catch HyperIDStorageAPIError.identityProviderNotFound {
 			alertState.title	= "Unknown identity provider"
 			alertState.message	= "Please check provider availability in provider configuration"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.walletNotExists {
+		} catch HyperIDStorageAPIError.walletNotExists {
 			alertState.title	= "Wallet not found"
 			alertState.message	= "Wallet not found or not attached to the HyperID account"
 			alertState.isActive	= true
@@ -380,11 +447,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -405,19 +472,19 @@ class ClientController : NSObject, ObservableObject {
 			try await hyperIDSDK.setUserData((key: key, value: value),
 											 dataScope: isPrivate ? .private : .public,
 											 storage: storage)
-		} catch HyperIDAPIStorageError.keyInvalid {
+		} catch HyperIDStorageAPIError.keyInvalid {
 			alertState.title	= "Key invalid"
 			alertState.message	= "Key \"\(key)\" invalid"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.keyAccessDenied {
+		} catch HyperIDStorageAPIError.keyAccessDenied {
 			alertState.title	= "Key access denied"
 			alertState.message	= "You have no access to this key"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.identityProviderNotFound {
+		} catch HyperIDStorageAPIError.identityProviderNotFound {
 			alertState.title	= "Unknown identity provider"
 			alertState.message	= "Please check provider availability in provider configuration"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.walletNotExists {
+		} catch HyperIDStorageAPIError.walletNotExists {
 			alertState.title	= "Wallet not found"
 			alertState.message	= "Wallet not found or not attached to the HyperID account"
 			alertState.isActive	= true
@@ -425,11 +492,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -446,11 +513,11 @@ class ClientController : NSObject, ObservableObject {
 									storage	: HyperIDStorage) async {
 		do {
 			lastLoadedValue = try await hyperIDSDK.getUserData(key, storage: storage)
-		} catch HyperIDAPIStorageError.identityProviderNotFound {
+		} catch HyperIDStorageAPIError.identityProviderNotFound {
 			alertState.title	= "Unknown identity provider"
 			alertState.message	= "Please check provider availability in provider configuration"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.walletNotExists {
+		} catch HyperIDStorageAPIError.walletNotExists {
 			alertState.title	= "Wallet not found"
 			alertState.message	= "Wallet not found or not attached to the HyperID account"
 			alertState.isActive	= true
@@ -458,11 +525,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true
@@ -479,11 +546,11 @@ class ClientController : NSObject, ObservableObject {
 									   storage	: HyperIDStorage) async {
 		do {
 			try await hyperIDSDK.deleteUserData(key, storage: storage)
-		} catch HyperIDAPIStorageError.identityProviderNotFound {
+		} catch HyperIDStorageAPIError.identityProviderNotFound {
 			alertState.title	= "Unknown identity provider"
 			alertState.message	= "Please check provider availability in provider configuration"
 			alertState.isActive	= true
-		} catch HyperIDAPIStorageError.walletNotExists {
+		} catch HyperIDStorageAPIError.walletNotExists {
 			alertState.title	= "Wallet not found"
 			alertState.message	= "Wallet not found or not attached to the HyperID account"
 			alertState.isActive	= true
@@ -491,11 +558,11 @@ class ClientController : NSObject, ObservableObject {
 			alertState.title	= "Authorization expired"
 			alertState.message	= "Please sign in again"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.serverMaintenance {
+		} catch HyperIDBaseAPIError.serverMaintenance {
 			alertState.title	= "HyperID server maintenance"
 			alertState.message	= "Please try again later"
 			alertState.isActive	= true
-		} catch HyperIDAPIBaseError.networkingError(description: let desc) {
+		} catch HyperIDBaseAPIError.networkingError(description: let desc) {
 			alertState.title	= "Networking error"
 			alertState.message	= "\(desc)"
 			alertState.isActive	= true

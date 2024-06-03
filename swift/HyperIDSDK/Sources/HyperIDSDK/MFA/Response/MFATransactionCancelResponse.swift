@@ -1,4 +1,5 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
 //	MARK: MFATransactionCancelResponse
@@ -70,22 +71,22 @@ struct MFATransactionCancelResponse : HyperIDResponseBase, Codable {
 		func validate() throws {
 			switch self {
 			case .unsupported(code: _):
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .success,
 				 .failByTransactionExpired,
 				 .failByAlreadyCanceled:
 				return
 			case .failByServiceTemporaryNotValid,
 				 .failByInvalidParameters:
-				throw HyperIDAPIBaseError.serverMaintenance
+				throw HyperIDBaseAPIError.serverMaintenance
 			case .failByAccessDenied,
 				 .failByTokenExpired,
 				 .failByTokenInvalid:
-				throw HyperIDAPIBaseError.invalidAccessToken
+				throw HyperIDBaseAPIError.invalidAccessToken
 			case .failByTransactionNotFound:
-				throw HyperIDAPIMFAError.MFATransactionNotFound
+				throw HyperIDMFAAPIError.MFATransactionNotFound
 			case .failByTransactionCompleted:
-				throw HyperIDAPIMFAError.MFATransactionAlreadyCompleted
+				throw HyperIDMFAAPIError.MFATransactionAlreadyCompleted
 			}
 		}
 	}

@@ -3,7 +3,7 @@ import Foundation
 //**************************************************************************************************
 //	HyperIDAPIStorageError
 //--------------------------------------------------------------------------------------------------
-public enum HyperIDAPIStorageError : HyperIDSDKErrorProtocol {
+public enum HyperIDStorageAPIError : HyperIDErrorProtocol {
 	case keyInvalid
 	case keyAccessDenied
 	case keysSizeLimitReached

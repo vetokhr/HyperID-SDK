@@ -1,4 +1,5 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
 //	MARK: StorageUserDataResponse
@@ -82,7 +83,7 @@ enum StorageUserDataResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success,
 			 .successWithConflictKey,
 			 .successNotFound:
@@ -90,12 +91,12 @@ enum StorageUserDataResult : StorageResultProtocol {
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 			 .failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .failByKeysSizeLimitReached:
-			throw HyperIDAPIStorageError.keysSizeLimitReached
+			throw HyperIDStorageAPIError.keysSizeLimitReached
 		}
 	}
 }
@@ -149,21 +150,21 @@ enum StorageWalletUserDataResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success,
 			 .successNotFound:
 			return
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 			 .failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .failByKeysSizeLimitReached:
-			throw HyperIDAPIStorageError.keysSizeLimitReached
+			throw HyperIDStorageAPIError.keysSizeLimitReached
 		case .failByWalletNotExists:
-			throw HyperIDAPIStorageError.walletNotExists
+			throw HyperIDStorageAPIError.walletNotExists
 		}
 	}
 }
@@ -217,21 +218,21 @@ enum StorageIdentityProviderUserDataResult : StorageResultProtocol {
 	func validate() throws {
 		switch self {
 		case .unsupported(code: _):
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .success,
 			 .successNotFound:
 			return
 		case .failByTokenInvalid,
 			 .failByTokenExpired,
 			 .failByAccessDenied:
-			throw HyperIDAPIBaseError.invalidAccessToken
+			throw HyperIDBaseAPIError.invalidAccessToken
 		case .failByServiceTemporaryNotValid,
 			 .failByInvalidParameters:
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		case .failByKeysSizeLimitReached:
-			throw HyperIDAPIStorageError.keysSizeLimitReached
+			throw HyperIDStorageAPIError.keysSizeLimitReached
 		case .failByIdentityProviderNotFound:
-			throw HyperIDAPIStorageError.identityProviderNotFound
+			throw HyperIDStorageAPIError.identityProviderNotFound
 		}
 	}
 }

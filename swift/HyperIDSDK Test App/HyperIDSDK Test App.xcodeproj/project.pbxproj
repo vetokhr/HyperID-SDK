@@ -21,6 +21,7 @@
 		AD8BA8D72B0613F400513BDF /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8BA8D62B0613F400513BDF /* RootView.swift */; };
 		AD8BA8DB2B0613F500513BDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD8BA8DA2B0613F500513BDF /* Assets.xcassets */; };
 		AD8BA8DE2B0613F500513BDF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD8BA8DD2B0613F500513BDF /* Preview Assets.xcassets */; };
+		ADBA55122C0A346D00967463 /* UserWalletsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBA55112C0A346D00967463 /* UserWalletsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		AD8BA8D62B0613F400513BDF /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AD8BA8DA2B0613F500513BDF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AD8BA8DD2B0613F500513BDF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		ADBA55112C0A346D00967463 /* UserWalletsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWalletsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 				AD24DAD42B0B8405004FF7FA /* KYCStatusTopLevelInfoView.swift */,
 				AD24DAD62B0BB30D004FF7FA /* StorageKeysView.swift */,
 				AD24DAD22B0B7249004FF7FA /* DisplayItemView.swift */,
+				ADBA55112C0A346D00967463 /* UserWalletsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -194,6 +197,7 @@
 				AD3EF9272B077F59004BEE40 /* ClientController.swift in Sources */,
 				AD8BA8D52B0613F400513BDF /* HyperIDSDK_Test_AppApp.swift in Sources */,
 				AD24DAD52B0B8405004FF7FA /* KYCStatusTopLevelInfoView.swift in Sources */,
+				ADBA55122C0A346D00967463 /* UserWalletsView.swift in Sources */,
 				AD24DAD12B0B6FAA004FF7FA /* KYCStatusInfoView.swift in Sources */,
 				AD3EF9292B0788C0004BEE40 /* AlertState.swift in Sources */,
 				AD3EF9212B06DDA6004BEE40 /* RootController.swift in Sources */,

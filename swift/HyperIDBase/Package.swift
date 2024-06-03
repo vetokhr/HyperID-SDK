@@ -7,29 +7,24 @@ import PackageDescription
 //	MARK: Package
 //--------------------------------------------------------------------------------------------------
 let package = Package(
-	name: "HyperIDSDK",
+	name: "HyperIDBase",
 	platforms: [
 		.macOS(.v12), .iOS(.v15), .tvOS(.v15)
 	],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "HyperIDSDK",
-			targets: ["HyperIDSDK"]),
+			name: "HyperIDBase",
+			targets: ["HyperIDBase"]),
 	],
-	dependencies: [
-		//TODO: after publishing replace previous dependency with url to the package
-		.package(name: "HyperIDAuth", path: "../HyperIDAuth"),
-	],
+	dependencies: [],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "HyperIDSDK", dependencies: [
-				"HyperIDAuth",
-			]),
+			name: "HyperIDBase", dependencies: []),
 		.testTarget(
-			name: "HyperIDSDKTests",
-			dependencies: ["HyperIDSDK"]),
+			name: "HyperIDBaseTests",
+			dependencies: ["HyperIDBase"]),
 	]
 )

@@ -1,4 +1,5 @@
 import Foundation
+import HyperIDBase
 
 //**************************************************************************************************
 //	HyperIDStorage - base
@@ -27,7 +28,7 @@ extension HyperIDStorage {
 		case .wallet(address: let walletAddress):
 			["wallet_address": walletAddress]
 		case .identityProvider(let identityProvider):
-			["identity_provider": identityProvider.name]
+			["identity_provider": identityProvider]
 		default:
 			[:]
 		}
@@ -58,7 +59,7 @@ extension HyperIDStorage {
 	//	processUserDataSharedKeysListGetResponseData
 	//--------------------------------------------------------------------------------------------------
 	func processUserDataSharedKeysListGetResponseData(data: Data) throws -> (keys: [String], nextSearchId: String?) {
-		guard data.count > 0 else { throw HyperIDAPIBaseError.serverMaintenance }
+		guard data.count > 0 else { throw HyperIDBaseAPIError.serverMaintenance }
 		var responseDecoded : StorageSharedDataKeysListResponseProtocol!
 		switch self {
 		case .email,
@@ -70,7 +71,7 @@ extension HyperIDStorage {
 			responseDecoded = try JSONDecoder().decode(StorageUserSharedKeysListResponse<StrorageIdentityProviderSharedKeysListResult>.self, from: data)
 		}
 		guard let responseDecoded = responseDecoded else {
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 		try responseDecoded.validate()
 		return (keys: responseDecoded.keys, nextSearchId: responseDecoded.nextSearchId.isEmpty ? nil : responseDecoded.nextSearchId)
@@ -94,7 +95,7 @@ extension HyperIDStorage {
 	//	processUserDataKeysListGetResponseData
 	//--------------------------------------------------------------------------------------------------
 	func processUserDataKeysListGetResponseData(data: Data) throws -> (keysPrivate: [String], keysPublic: [String]) {
-		guard data.count > 0 else { throw HyperIDAPIBaseError.serverMaintenance }
+		guard data.count > 0 else { throw HyperIDBaseAPIError.serverMaintenance }
 		var responseDecoded : StorageDataKeysListResponseProtocol!
 		switch self {
 		case .email,
@@ -106,7 +107,7 @@ extension HyperIDStorage {
 			responseDecoded = try JSONDecoder().decode(StorageUserKeysListResponse<StorageIdentityProviderUserKeysResult>.self, from: data)
 		}
 		guard let responseDecoded = responseDecoded else {
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 		try responseDecoded.validate()
 		return (keysPrivate:		responseDecoded.keysPrivate,
@@ -138,7 +139,7 @@ extension HyperIDStorage {
 	//	processUserDataValueSetResponseData
 	//--------------------------------------------------------------------------------------------------
 	func processUserDataValueSetResponseData(data: Data) throws {
-		guard data.count > 0 else { throw HyperIDAPIBaseError.serverMaintenance }
+		guard data.count > 0 else { throw HyperIDBaseAPIError.serverMaintenance }
 		var responseDecoded : HyperIDResponseBase!
 		switch self {
 		case .email,
@@ -150,7 +151,7 @@ extension HyperIDStorage {
 			responseDecoded = try? JSONDecoder().decode(StorageDataValueSetResponse<StorageIdentityProviderUserDataSetResult>.self, from: data)
 		}
 		guard let responseDecoded = responseDecoded else {
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 		try responseDecoded.validate()
 	}
@@ -177,7 +178,7 @@ extension HyperIDStorage {
 	//	processUserDataValueGetResponseData
 	//--------------------------------------------------------------------------------------------------
 	func processUserDataValueGetResponseData(data: Data) throws -> String? {
-		guard data.count > 0 else { throw HyperIDAPIBaseError.serverMaintenance }
+		guard data.count > 0 else { throw HyperIDBaseAPIError.serverMaintenance }
 		var responseDecoded : StorageUserDataResponseProtocol!
 		switch self {
 		case .email,
@@ -189,7 +190,7 @@ extension HyperIDStorage {
 			responseDecoded = try? JSONDecoder().decode(StorageUserDataResponse<StorageIdentityProviderUserDataResult>.self, from: data)
 		}
 		guard let responseDecoded = responseDecoded else {
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 		try responseDecoded.validate()
 		return responseDecoded.values.first
@@ -217,7 +218,7 @@ extension HyperIDStorage {
 	//	processUserDataValueGetResponseData
 	//--------------------------------------------------------------------------------------------------
 	func processUserDataValueDeleteResponseData(data: Data) throws {
-		guard data.count > 0 else { throw HyperIDAPIBaseError.serverMaintenance }
+		guard data.count > 0 else { throw HyperIDBaseAPIError.serverMaintenance }
 		var responseDecoded : HyperIDResponseBase!
 		switch self {
 		case .email,
@@ -229,7 +230,7 @@ extension HyperIDStorage {
 			responseDecoded = try? JSONDecoder().decode(StorageUserDataValueDeleteResponse<StorageIdentityProviderUserDataDeleteResult>.self, from: data)
 		}
 		guard let responseDecoded = responseDecoded else {
-			throw HyperIDAPIBaseError.serverMaintenance
+			throw HyperIDBaseAPIError.serverMaintenance
 		}
 		try responseDecoded.validate()
 	}
