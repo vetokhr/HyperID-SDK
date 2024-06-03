@@ -235,7 +235,7 @@ After web part of authorization for transaction, HyperID should redirect you to 
 ```Swift
 let url = URL(string: "redirect_url")! //replace this with your url
 
-try await hyperIDSDK.completeSignInWithTransaction(redirectURL: url)
+let transactionHash = try await hyperIDSDK.completeSignInWithTransaction(redirectURL: url)
 ```
 
 During execution this code should call next exceptions:

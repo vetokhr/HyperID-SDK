@@ -113,8 +113,30 @@ let authSession = ASWebAuthenticationSession(url:		authURL,
 	if let redirectURL = redirectURL {
 		Task {
 			try await self.hyperIDSDK.completeSignIn(redirectURL: redirectURL)
-			//or if you wanna complete auth after transaction completing [use only one of them]
-			try await self.hyperIDSDK.completeSignInWithTransaction(redirectURL: redirectURL)
+		}
+	}
+})
+//
+//another auth session configurations
+//
+authSession?.start()
+```
+```Swift
+import AuthenticationServices
+import HyperIDSDK
+
+let url = try hyperIdSDK.startSignInWithTransaction(from:	"0x43D192d3eC9CaEFbc92385bGD3508d87E566595f",
+                                                    to:		"0x0AeB980AB115E45409D9bA31CCffcc75995E3dfA",
+                                                    chain:	"11155111",
+                                                    data:	"0x0",
+                                                    nonce:	"0",
+                                                    value:	"0x1")
+let authSession = ASWebAuthenticationSession(url:		authURL,
+					     callbackURLScheme:	"hyperhttps://*",
+					     completionHandler:	{ redirectURL, error in
+	if let redirectURL = redirectURL {
+		Task {
+			let transactionHash = try await self.hyperIDSDK.completeSignInWithTransaction(redirectURL: redirectURL)
 		}
 	}
 })
