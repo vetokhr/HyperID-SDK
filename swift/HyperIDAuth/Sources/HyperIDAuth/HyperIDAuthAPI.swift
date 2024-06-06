@@ -59,7 +59,8 @@ public class HyperIDAuthAPI : HyperIDBase.HyperIDBaseAPI {
 	//	startSignInWeb2()
 	//--------------------------------------------------------------------------------------------------
 	public func startSignInWeb2(kycVerificationLevel	: KYCVerificationLevel? = nil) throws -> URL {
-		return try authorizationStart(flowMode: .signInWeb2)
+		return try authorizationStart(flowMode:				.signInWeb2,
+									  KYCVerificationLevel:	kycVerificationLevel)
 	}
 	//==================================================================================================
 	//	startSignInWeb3()
@@ -98,15 +99,22 @@ public class HyperIDAuthAPI : HyperIDBase.HyperIDBaseAPI {
 	public func startSignInWithTransaction(from		: String? = nil,
 										   to		: String,
 										   chain	: String,
-										   data		: String,
+										   data		: String?,
 										   gas		: String? = nil,
 										   nonce	: String? = nil,
 										   value	: String? = nil) throws -> URL {
 		var transaction : [String : any Codable] = [
 			"to"		: to,
-			"chain"		: chain,
-			"data"		: data
+			"chain"		: chain
 		]
+		if let data = data
+		{
+			transaction["data"] = data
+		}
+		else if value == nil
+		{
+			throw HyperIDAuthAPIError.transactionDataAndValueIsEmpty
+		}
 		if let from = from {
 			transaction["from"] = from
 		}

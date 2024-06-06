@@ -95,7 +95,7 @@ public extension HyperIDSDK {
 	func startSignInWithTransaction(from	: String?	= nil,
 									to		: String,
 									chain	: String,
-									data	: String	= "0x0",
+									data	: String?,
 									gas		: String?	= nil,
 									nonce	: String?	= nil,
 									value	: String?	= nil) throws -> URL {

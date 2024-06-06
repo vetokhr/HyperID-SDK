@@ -223,6 +223,10 @@ let url = try hyperIdSDK.startSignInWithTransaction(from:	"0x43D192d3eC9CaEFbc92
                                                     value:	"0x1")
 ```
 
+|Exception| Description|
+|---------|------------|
+|`HyperIDBaseAPIError.transactionDataAndValueIsEmpty`| Transaction data and value are empty. Please set one of this values |
+
 ### completeSignInWithTransaction(redirectURL: URL)
 
 After web part of authorization for transaction, HyperID should redirect you to the redirect URL specified in `ClientInfo`. Use it to complete authorization and continue your work with HyperID SDK.

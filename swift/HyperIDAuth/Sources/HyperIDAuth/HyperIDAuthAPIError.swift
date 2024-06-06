@@ -12,6 +12,7 @@ public enum HyperIDAuthAPIError : HyperIDErrorProtocol {
 	case assertionTokenSignError(description : String)
 	
 	case authorizationInvalidRedirectURLError(description : String)
+	case transactionDataAndValueIsEmpty
 	case transactionInvalidParameters(description : String)
 	case transactionRejectedByUser(description : String)
 	
@@ -27,6 +28,7 @@ public enum HyperIDAuthAPIError : HyperIDErrorProtocol {
 		case .assertionTokenSignError(let msg):								"Assertion token sign error: \(msg)"
 		case .tokenExchangeInvalidGrant(let msg):							"Token exchange error: invalid grant. Details: \(msg)"
 		case .authorizationInvalidRedirectURLError(let msg):				"Token exchange error: invalid redirect url. Details: \(msg)"
+		case .transactionDataAndValueIsEmpty:								"Transaction data and value is empty"
 		case .transactionInvalidParameters(description: let msg):			"Transaction invalid parameters error. Details: \(msg)"
 		case .transactionRejectedByUser(description: let msg):				"Transaction rejected by user. Details: \(msg)"
 		}
