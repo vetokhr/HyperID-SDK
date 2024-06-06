@@ -185,6 +185,9 @@ fun UiSceneAuthInitialised(_viewModel : eViewModel)
 							onClick	= { _viewModel.authApi.sdkAuthIdentityProvider() })
 			}
 		}
+
+		BoxedButton(text	= "Transaction",
+					onClick	= { _viewModel.authApi.sdkAuthTransaction() })
 	}
 }
 

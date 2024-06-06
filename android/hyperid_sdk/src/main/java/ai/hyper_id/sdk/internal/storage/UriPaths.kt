@@ -20,6 +20,8 @@ internal object UriPaths
 	internal const val pathKeysSharedGetByWalletId	= "user-data/by-wallet/shared-list-get"
 	internal const val pathDataDeleteByWalletId		= "user-data/by-wallet/delete"
 
+	internal const val pathWalletGet				= "user-wallets/get"
+
 	internal const val pathDataSetByIdP				= "user-data/by-idp/set"
 	internal const val pathDataGetByIdP				= "user-data/by-idp/get"
 	internal const val pathKeysGetByIdP				= "user-data/by-idp/list-get"

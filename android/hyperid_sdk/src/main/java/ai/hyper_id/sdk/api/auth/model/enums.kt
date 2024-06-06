@@ -6,8 +6,7 @@ package ai.hyper_id.sdk.api.auth.model
 enum class HyperIdProvider
 {
 	PRODUCTION,
-	SANDBOX,
-	STAGE;
+	SANDBOX;
 }
 
 //**************************************************************************************************

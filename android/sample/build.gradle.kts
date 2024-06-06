@@ -6,12 +6,12 @@ plugins {
 
 android {
 	namespace = "com.hyper_id.sdk"
-	compileSdk = 33
+	compileSdk = 34
 
 	defaultConfig {
 		applicationId = "com.hyper_id.sdk"
 		minSdk = 24
-		targetSdk = 33
+		targetSdk = 34
 		versionCode = 1
 		versionName = "1.0"
 
@@ -48,11 +48,11 @@ android {
 }
 
 dependencies {
-	implementation("androidx.core:core-ktx:1.9.0")
-	implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-	implementation("androidx.activity:activity-compose:1.7.2")
+	implementation("androidx.core:core-ktx:1.13.1")
+	implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
+	implementation("androidx.activity:activity-compose:1.9.0")
 	implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-	implementation("androidx.navigation:navigation-compose:2.6.0")
+	implementation("androidx.navigation:navigation-compose:2.7.7")
 	implementation("androidx.compose.ui:ui")
 	implementation("androidx.compose.ui:ui-graphics")
 	implementation("androidx.compose.ui:ui-tooling-preview")
@@ -60,4 +60,5 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 	implementation(project(mapOf("path" to ":hyperid_sdk")))
 	implementation("com.auth0:java-jwt:4.4.0")
+	debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
 }

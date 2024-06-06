@@ -44,6 +44,7 @@ There are couple of possible authentication methods avaible:
 * sing in with wallet
 * sign in with indentity provider
 * sign in with kyc verification
+* sign in with transaction start
 
 ### The following examples will demonstarte how to use them
 
@@ -55,6 +56,9 @@ val sdkAuth = sdk.getAuth()
 val url = sdkAuth.startSignInWeb2("params")
 val url = sdkAuth.startSignInWeb3("params")
 val url = sdkAuth.startSignInWalletGet("params")
+val url = sdkAuth.startSignInGuestUpgrade("params")
+val url = sdkAuth.startSignInIdentityProvider("params")
+val url = sdkAuth.startSignInWithTransaction("params")
 
 ```
 Sign in using identity provider:
@@ -108,7 +112,12 @@ After sign in in HyperID you will receive the callback to your redirect url. Her
   ```Kotlin
 sdkAuth.completeSignIn("entire redirect URL",
                         "your result listener")
+```
 
+If authorization start with transaction for completing you should  use:
+```Kotlin
+sdkAuth.completeSignInWithTransaction("entire redirect URL",
+                                      "your result listener")
 ```
 ### KYC
 
@@ -329,3 +338,14 @@ Does not return anything in case of success.
 ```Kotlin
 storageByWallet.dataDelete(walletAddress='0xAABBCC', keys, "your result listener")
 ```
+
+Wallets get:
+Function do not takes additional arguments and return list of ```WalletInfo```.
+```Kotlin
+storageByWallet.walletsGet("your result listener")
+```
+
+## License
+
+### Code
+The code in this repository, including all code samples in the notebooks listed above, is released under the [MIT license](LICENSE-CODE). Read more at the [Open Source Initiative](https://opensource.org/licenses/MIT).

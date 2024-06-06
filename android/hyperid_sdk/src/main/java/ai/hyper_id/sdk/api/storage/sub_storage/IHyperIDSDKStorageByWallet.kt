@@ -9,6 +9,19 @@ import ai.hyper_id.sdk.api.storage.enums.UserDataSetByWalletResult
 
 interface IHyperIDSDKStorageByWallet
 {
+	data class WalletInfo(val isPublic	: Boolean,
+						  val address	: String,
+						  val chainId	: String,
+						  val family	: Int,
+						  val label		: String,
+						  val tags		: List<String>,)
+	interface IWalletsGetResultListener
+	{
+		fun onRequestComplete(result			: IHyperIdSDK.RequestResult,
+							  serviceErrorDesc	: String?,
+							  wallets			: List<WalletInfo>)
+	}
+
 	interface IDataSetResultListener {
 		fun onRequestComplete(result		: IHyperIdSDK.RequestResult,
 							  errorDesc		: String?,
@@ -46,6 +59,9 @@ interface IHyperIDSDKStorageByWallet
 							  errorDesc		: String?,
 							  serviceResult	: UserDataDeleteByWalletResult?)
 	}
+
+	fun walletsGet(completeListener : IWalletsGetResultListener)
+
 	/**
 	 * dataSet
 	 */

@@ -24,6 +24,7 @@ import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 //**************************************************************************************************
 //	HyperIDSDKAuthImpl
@@ -49,7 +50,6 @@ internal class HyperIDSDKAuthImpl : IHyperIDSDKAuth, IRestApiInterface
 									{
 										HyperIdProvider.PRODUCTION	-> "https://login.hypersecureid.com"
 										HyperIdProvider.SANDBOX		-> "https://login-sandbox.hypersecureid.com"
-										HyperIdProvider.STAGE		-> "https://login-stage.hypersecureid.com"
 									})
 		this.clientInfo		= clientInfo
 		this.refreshToken	= authRestoreInfo
@@ -184,6 +184,92 @@ internal class HyperIDSDKAuthImpl : IHyperIDSDKAuth, IRestApiInterface
 						   _verificationLevel	= verificationLevel,
 						   _completeListener	= completeListener)
 	}
+	override fun startSignInWithTransaction(from				: String?,
+											to					: String,
+											chain				: String,
+											data				: String?,
+											value				: String?,
+											gas					: String?,
+											nonce				: String?,
+											completeListener	: IHyperIDSDKAuth.IAuthorizationStartResultListener)
+	{
+		if(providerUri == null
+		   || clientInfo == null
+		   || !clientInfo!!.isValid()
+		   || discover == null
+		   || !discover!!.isValid())
+		{
+			completeListener.onRequestComplete(IHyperIdSDK.RequestResult.FAIL_INIT_REQUIRED,
+											   null,
+											   null)
+			return
+		}
+
+		val json = JSONObject()
+		if(!from.isNullOrBlank())
+		{
+			json.put("from", from)
+		}
+
+		if(to.isBlank())
+		{
+			completeListener.onRequestComplete(IHyperIdSDK.RequestResult.FAIL_SERVICE,
+											   "Field \"to\" can not be empty",
+											   null)
+			return
+		}
+		json.put("to", to)
+
+		if(chain.isBlank())
+		{
+			completeListener.onRequestComplete(IHyperIdSDK.RequestResult.FAIL_SERVICE,
+											   "Field \"chain\" can not be empty",
+											   null)
+			return
+		}
+		json.put("chain", chain)
+
+		if(data.isNullOrBlank() && value.isNullOrBlank())
+		{
+			completeListener.onRequestComplete(IHyperIdSDK.RequestResult.FAIL_SERVICE,
+											   "Field \"data\" can not be empty",
+											   null)
+			return
+		}
+
+		if(data.isNullOrBlank())
+		{
+			json.put("data", "0x0")
+		}
+		else
+		{
+			json.put("data", data)
+		}
+
+		if(!value.isNullOrBlank())
+		{
+			json.put("value", value)
+		}
+
+		if(!gas.isNullOrBlank())
+		{
+			json.put("gas", gas)
+		}
+
+		if(!nonce.isNullOrBlank())
+		{
+			json.put("nonce", nonce)
+		}
+
+		val uri = UriBuilders.authorization(_endpoint			= discover!!.authEndpoint,
+											_scopes				= discover!!.scopes,
+											_clientInfo			= clientInfo!!,
+											_transactionInfo	= json.toString())
+
+		completeListener.onRequestComplete(IHyperIdSDK.RequestResult.SUCCESS,
+										   null,
+										   uri.toString())
+	}
 	//==================================================================================================
 	//	completeSignIn
 	//--------------------------------------------------------------------------------------------------
@@ -305,6 +391,31 @@ internal class HyperIDSDKAuthImpl : IHyperIDSDKAuth, IRestApiInterface
 											   "_redirectURL is not valid URL",
 											   null)
 		}
+	}
+	override fun completeSignInWithTransaction(redirectUrl		: String,
+											   completeListener	: IHyperIDSDKAuth.IAuthorizationWithTransactionCompleteListener)
+	{
+		val authCompleteListener =	object : IHyperIDSDKAuth.IAuthorizationCompleteListener
+									{
+										override fun onRequestComplete(_result			: IHyperIdSDK.RequestResult,
+																	   _errorDesc		: String?,
+																	   _authRestoreInfo	: String?)
+										{
+											if(_result == IHyperIdSDK.RequestResult.SUCCESS)
+											{
+												completeListener.onRequestComplete(_result,
+																				   _errorDesc,
+																				   Uri.parse(redirectUrl).getQueryParameter("transaction_hash"))
+											}
+											else
+											{
+												completeListener.onRequestComplete(_result,
+																				   _errorDesc,
+																				   null)
+											}
+										}
+									}
+		completeSignIn(redirectUrl, authCompleteListener)
 	}
 	//==================================================================================================
 	//	AuthorizationStart
@@ -613,25 +724,25 @@ internal class HyperIDSDKAuthImpl : IHyperIDSDKAuth, IRestApiInterface
 															_accessToken!!,
 															object : HTTPTransport.ITransportRequestResult
 															{
-																override fun OnRequestComplete(_result			: HTTPTransport.TransportRequestResult,
+																override fun OnRequestComplete(_result				: HTTPTransport.TransportRequestResult,
 																							   _requestResultCode	: Int,
 																							   _requestAnswerBody	: String?)
 																{
 																	when(_result)
 																	{
-																		HTTPTransport.TransportRequestResult.ERROR_FAIL_CONNECTION ->
+																		HTTPTransport.TransportRequestResult.ERROR_FAIL_CONNECTION	->
 																		{
 																			callback.OnRequestComplete(RestApiRequestResult.FAIL_CONNECTION,
 																									   null,
 																									   null)
 																		}
-																		HTTPTransport.TransportRequestResult.ERROR_FAIL_SERVER     ->
+																		HTTPTransport.TransportRequestResult.ERROR_FAIL_SERVER		->
 																		{
 																			callback.OnRequestComplete(RestApiRequestResult.FAIL_SERVICE,
 																									   HelpersJson.errorExtract(jsonParser, _requestResultCode, _requestAnswerBody),
 																									   null)
 																		}
-																		HTTPTransport.TransportRequestResult.SUCCESS               ->
+																		HTTPTransport.TransportRequestResult.SUCCESS				->
 																		{
 																			callback.OnRequestComplete(RestApiRequestResult.SUCCESS,
 																									   null,

@@ -88,6 +88,8 @@ class HyperIdSdkStorageDemoApi(private val sdkStorage : IHyperIDSDKStorage)
 			userDataByWalletDelete()
 			delay(200L)
 			userDataByWalletKeysGet()
+			delay(200L)
+			walletsGet()
 		}
 	}
 	fun testStorageByIdp()
@@ -113,6 +115,7 @@ class HyperIdSdkStorageDemoApi(private val sdkStorage : IHyperIDSDKStorage)
 			userDataByIdpGet()
 		}
 	}
+
 	private fun userDataByEmailSet()
 	{
 		val completeListener = object : IHyperIDSDKStorageByEmail.IDataSetResultListener
@@ -457,6 +460,27 @@ class HyperIdSdkStorageDemoApi(private val sdkStorage : IHyperIDSDKStorage)
 		storageWallet.dataDelete(WALLET_ADDRESS,
 								 listOf (STORAGE_DEMO_KEY),
 								 completeListener)
+	}
+	private fun walletsGet()
+	{
+		val completeListener = object : IHyperIDSDKStorageByWallet.IWalletsGetResultListener
+		{
+			override fun onRequestComplete(result		: IHyperIdSDK.RequestResult,
+										   errorDesc	: String?,
+										   walletsInfo	: List<IHyperIDSDKStorageByWallet.WalletInfo>)
+			{
+				if(result == IHyperIdSDK.RequestResult.SUCCESS)
+				{
+					Log.d(TAG, "[walletsGet] complete with wallets:{ ${walletsInfo.joinToString { "${it.isPublic} ${it.address} ${it.chainId} ${it.family}\n "}} }")
+				}
+				else
+				{
+					Log.d(TAG, "[walletsGet] failed with error/${result}($errorDesc)")
+				}
+			}
+		}
+
+		storageWallet.walletsGet(completeListener)
 	}
 
 	private fun userDataByIdpSet()

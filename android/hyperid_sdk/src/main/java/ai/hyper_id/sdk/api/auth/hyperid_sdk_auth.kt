@@ -21,6 +21,11 @@ interface IHyperIDSDKAuth
 							  _errorDesc		: String?,
 							  _authRestoreInfo	: String?)
 	}
+	interface IAuthorizationWithTransactionCompleteListener	{
+		fun onRequestComplete(_result			: IHyperIdSDK.RequestResult,
+							  _errorDesc		: String?,
+							  _transactionHash	: String?)
+	}
 	interface IUserInfoGetListener {
 		fun onRequestComplete(_result		: IHyperIdSDK.RequestResult,
 							  _serviceError	: String?,
@@ -47,7 +52,14 @@ interface IHyperIDSDKAuth
 	fun startSignInIdentityProvider(identityProvider		: String,
 									verificationLevel		: KycVerificationLevel?	= null,
 									completeListener		: IAuthorizationStartResultListener)
-
+	fun startSignInWithTransaction(from							: String? = null,
+								   to							: String,
+								   chain						: String,
+								   data							: String? = null,
+								   value						: String? = null,
+								   gas							: String? = null,
+								   nonce						: String? = null,
+								   completeListener				: IAuthorizationStartResultListener)
 	/**
 	 * completeSignIn
 	 *
@@ -57,6 +69,8 @@ interface IHyperIDSDKAuth
 	 * */
 	fun completeSignIn(redirectUrl		: String,
 					   completeListener	: IAuthorizationCompleteListener)
+	fun completeSignInWithTransaction(redirectUrl		: String,
+									  completeListener	: IAuthorizationWithTransactionCompleteListener)
 	/**
 	 * signOut
 	 *

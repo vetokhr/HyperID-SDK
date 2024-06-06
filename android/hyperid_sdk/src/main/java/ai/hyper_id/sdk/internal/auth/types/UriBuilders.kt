@@ -32,7 +32,8 @@ internal object UriBuilders
 							   _walletFamily			: WalletFamily?				= null,
 							   _walletAddress			: String?					= null,
 							   _verificationLevel		: KycVerificationLevel?		= null,
-							   _identityProvider		: String?					= null)			: Uri
+							   _identityProvider		: String?					= null,
+							   _transactionInfo			: String?					= null)			: Uri
 	{
 		val endpoint	= Uri.parse(_endpoint)
 		val uriBuilder	= Uri.Builder()
@@ -84,6 +85,10 @@ internal object UriBuilders
 		if(_identityProvider != null)
 		{
 			uriBuilder.appendQueryParameter("identity_provider",		_identityProvider)
+		}
+		if(_transactionInfo != null)
+		{
+			uriBuilder.appendQueryParameter("transaction",				_transactionInfo)
 		}
 		return uriBuilder.build()
 	}

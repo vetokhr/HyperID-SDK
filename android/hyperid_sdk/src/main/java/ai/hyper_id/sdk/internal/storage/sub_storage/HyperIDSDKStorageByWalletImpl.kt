@@ -12,12 +12,27 @@ import ai.hyper_id.sdk.internal.storage.rest_api_requests.StorageByWalletDataGet
 import ai.hyper_id.sdk.internal.storage.rest_api_requests.StorageByWalletDataSet
 import ai.hyper_id.sdk.internal.storage.rest_api_requests.StorageByWalletKeysGet
 import ai.hyper_id.sdk.internal.storage.rest_api_requests.StorageByWalletKeysSharedGet
+import ai.hyper_id.sdk.internal.storage.rest_api_requests.WalletsGetRequest
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 internal class HyperIDSDKStorageByWalletImpl(_sdkAuth : IRestApiInterface) : HyperIdSDKStorage(_sdkAuth), IHyperIDSDKStorageByWallet
 {
+	/**
+	 * getWallets
+	 */
+	override fun walletsGet(completeListener : IHyperIDSDKStorageByWallet.IWalletsGetResultListener)
+	{
+		WalletsGetRequest(this, completeListener).start()
+	}
+	fun walletsGet(request : WalletsGetRequest)
+	{
+		restApi.restApiRequestPost(UriPaths.pathWalletGet,
+								   emptyList(),
+								   request.requestResultListener)
+	}
+
 	/**
 	 * dataSet
 	 */

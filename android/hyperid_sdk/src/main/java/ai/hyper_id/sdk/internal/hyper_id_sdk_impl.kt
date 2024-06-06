@@ -17,10 +17,10 @@ import ai.hyper_id.sdk.internal.storage.HyperIDSDKStorageImpl
 //--------------------------------------------------------------------------------------------------
 class HyperIdSDKImpl : IHyperIdSDK
 {
-	private val auth								= HyperIDSDKAuthImpl()
-	private var kyc 		: IHyperIDSDKKYC?		= null
-	private var mfa 		: IHyperIdSDKMFA?		= null
-	private var storage 	: IHyperIDSDKStorage?	= null
+	private val auth									= HyperIDSDKAuthImpl()
+	private var kyc 		: IHyperIDSDKKYC?			= null
+	private var mfa 		: IHyperIdSDKMFA?			= null
+	private var storage 	: IHyperIDSDKStorage?		= null
 
 	//==================================================================================================
 	//	init
@@ -47,8 +47,8 @@ class HyperIdSDKImpl : IHyperIdSDK
 		auth.done()
 	}
 
-	override fun getAuth()		: IHyperIDSDKAuth		= auth
-	override fun getMFA()		: IHyperIdSDKMFA		= mfa		?: HyperIdMFAImpl(auth)
-	override fun getKYC()		: IHyperIDSDKKYC		= kyc		?: HyperIDSDKKYCImpl(auth)
-	override fun getStorage()	: IHyperIDSDKStorage	= storage	?: HyperIDSDKStorageImpl(auth)
+	override fun getAuth()			: IHyperIDSDKAuth			= auth
+	override fun getMFA()			: IHyperIdSDKMFA			= mfa			?: HyperIdMFAImpl(auth)
+	override fun getKYC()			: IHyperIDSDKKYC			= kyc			?: HyperIDSDKKYCImpl(auth)
+	override fun getStorage()		: IHyperIDSDKStorage		= storage		?: HyperIDSDKStorageImpl(auth)
 }

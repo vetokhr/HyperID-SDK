@@ -83,7 +83,7 @@ class HyperIdSdkDemoApi
 								}
 							}
 
-		sdk.init(HyperIdProvider.STAGE,
+		sdk.init(HyperIdProvider.SANDBOX,
 				 clientInfo,
 				 completeListener = initCallback)
 	}
@@ -115,6 +115,22 @@ class HyperIdSdkDemoApi
 												 authCallback)
 		}
 	}
+	fun sdkAuthTransaction()
+	{
+		isWaitingTransactionResult = true
+		/*sdkAuth?.startSignInWithTransaction(/*from				= "0x93753983FF4508b75D2c4b92Ee6ceF49bE92b6E4",*/
+											to					= "0x1C0287891dDf14a037E987E7323287f6Bc2bc974",
+											chain				= "11155111",
+											data				= "0x70a0823100000000000000000000000093753983ff4508b75d2c4b92ee6cef49be92b6e4",
+											value				= "0",
+											completeListener	= authCallback)*/
+		sdkAuth?.startSignInWithTransaction(from				= "0x43D192d3eC9CaEFbc92385bED8508d87E566595f",
+											to					= "0x1C0287891dDf14a037E987E7323287f6Bc2bc974",
+											chain				= "11155111",
+											data				= "0x70a0823100000000000000000000000043d192d3ec9caefbc92385bed8508d87e566595f",
+											/*value				= "0.001",*/
+											completeListener	= authCallback)
+	}
 	//==================================================================================================
 	//	authCompleteWithRedirect
 	//--------------------------------------------------------------------------------------------------
@@ -122,23 +138,49 @@ class HyperIdSdkDemoApi
 	{
 		Log.d(TAG, "[authCompleteWithRedirect] _url/$_url")
 
-		val completeListener =	object : IHyperIDSDKAuth.IAuthorizationCompleteListener
-								{
-									override fun onRequestComplete(_result			: IHyperIdSDK.RequestResult,
-																   _errorDesc		: String?,
-																   _authRestoreInfo	: String?)
+		if(isWaitingTransactionResult)
+		{
+			isWaitingTransactionResult = false
+			val completeListener =	object : IHyperIDSDKAuth.IAuthorizationWithTransactionCompleteListener
 									{
-										sdkAuthState_.value =	if(_result == IHyperIdSDK.RequestResult.SUCCESS)
-																{
-																	SdkAuthState.AUTHORIZED
-																}
-																else
-																{
-																	SdkAuthState.INITIALISED
-																}
+										override fun onRequestComplete(_result			: IHyperIdSDK.RequestResult,
+																	   _errorDesc		: String?,
+																	   _transactionHash	: String?)
+										{
+											sdkAuthState_.value =	if(_result == IHyperIdSDK.RequestResult.SUCCESS)
+																	{
+																		Log.d(TAG, "[authCompleteWithRedirect][onRequestComplete] _transactionHash/$_transactionHash")
+
+																		SdkAuthState.AUTHORIZED
+																	}
+																	else
+																	{
+																		SdkAuthState.INITIALISED
+																	}
+										}
 									}
-								}
-		sdkAuth?.completeSignIn(_url, completeListener)
+			sdkAuth?.completeSignInWithTransaction(_url, completeListener)
+		}
+		else
+		{
+			val completeListener =	object : IHyperIDSDKAuth.IAuthorizationCompleteListener
+									{
+										override fun onRequestComplete(_result			: IHyperIdSDK.RequestResult,
+																	   _errorDesc		: String?,
+																	   _authRestoreInfo	: String?)
+										{
+											sdkAuthState_.value =	if(_result == IHyperIdSDK.RequestResult.SUCCESS)
+											{
+												SdkAuthState.AUTHORIZED
+											}
+											else
+											{
+												SdkAuthState.INITIALISED
+											}
+										}
+									}
+			sdkAuth?.completeSignIn(_url, completeListener)
+		}
 	}
 	//==================================================================================================
 	//	userInfo
@@ -224,20 +266,21 @@ class HyperIdSdkDemoApi
 															 privateRSAKey			= null,
 															 authorizationMethod	= AuthorizationMethod.CLIENT_SECRET_HS256)
 
-	val sdk														= HyperIdSDKInstance()
-	private var sdkAuth 				: IHyperIDSDKAuth?		= null
-	var authUrl 						: String?				= null
+	val sdk															= HyperIdSDKInstance()
+	private var sdkAuth 				: IHyperIDSDKAuth?			= null
+	var authUrl 						: String?					= null
 		private set
 	val kycDemoApi 						: HyperIdSdkKycDemoApi		= HyperIdSdkKycDemoApi(sdk.getKYC())
 	val mfaDemoApi 						: HyperIdSdkMFADemoApi		= HyperIdSdkMFADemoApi(sdk.getMFA())
 	val storageDemoApi					: HyperIdSdkStorageDemoApi	= HyperIdSdkStorageDemoApi(sdk.getStorage())
 
-	var identityProvider		: String?				= null
+	var identityProvider				: String?					= null
 		set(_value)
 		{
 			field					= _value
 			identityProvider_.value	= field
 		}
+	private var isWaitingTransactionResult							= false
 
 	private val sdkAuthState_			= MutableStateFlow(SdkAuthState.CREATED)
 	val sdkAuthState					= sdkAuthState_.asStateFlow()
