@@ -141,6 +141,48 @@ export interface EndSessionResult {
   state: string;
 }
 
+export interface RestApiCredentials {
+  restApiEndpoint : string,
+}
+
+export interface DataSetConfiguration {
+  accessToken : string;
+  dataKey : string;
+  dataValue : string;
+}
+
+export interface DataSetResult {
+  result: string;
+}
+
+export interface DataGetConfiguration {
+  accessToken : string;
+  dataKey : string;
+}
+
+export interface WalletsGetConfiguration {
+  accessToken : string;
+}
+
+export interface DataGetResult {
+  result: string;
+  dataValues: string[];
+}
+
+export interface WalletInfo {
+    isPublic: boolean,
+    address: string,
+    chain: string,
+    family: string,
+    label: string,
+		tags: string[],
+}
+
+export interface WalletsGetResult {
+  result: string,
+  walletsInfo : WalletInfo[]
+}
+
 export function prefetchConfiguration(config: AuthConfiguration): Promise<void>;
 
 export function register(config: RegistrationConfiguration): Promise<RegistrationResponse>;
@@ -161,6 +203,21 @@ export function logout(
   config: EndSessionConfiguration,
   logoutConfig: LogoutConfiguration
 ): Promise<EndSessionResult>;
+
+export function dataSet(
+  config: RestApiCredentials,
+  dataSetConfig: DataSetConfiguration
+): Promise<DataSetResult>;
+
+export function dataGet(
+  config: RestApiCredentials,
+  dataGetConfig: DataGetConfiguration
+): Promise<DataGetResult>;
+
+export function walletsGet(
+  config: RestApiCredentials,
+  walletsGetConfig: WalletsGetConfiguration 
+): Promise<WalletsGetResult>;
 
 // https://tools.ietf.org/html/rfc6749#section-4.1.2.1
 type OAuthAuthorizationErrorCode =

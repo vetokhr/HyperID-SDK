@@ -12,6 +12,8 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.72.4",
+    "react-native-picker-select": "9.1.3",
+    "@react-native-picker/picker": "2.7.6",
     "react-native-app-auth": "link:../"
   },
   "devDependencies": {

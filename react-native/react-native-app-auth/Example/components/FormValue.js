@@ -4,7 +4,7 @@ import { Text, StyleSheet } from 'react-native';
 const FormValue = props => (
   <Text
     style={styles.text}
-    numberOfLines={10}
+    numberOfLines={2}
     ellipsizeMode="tail"
     {...props}
   />

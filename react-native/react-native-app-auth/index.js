@@ -353,6 +353,142 @@ export const revoke = async (
   });
 };
 
+
+export const dataSet = async (
+  { restApiEndpoint },
+  { accessToken, dataKey, dataValue }
+) => {
+  invariant(restApiEndpoint, 'Please include rest api endpoint');
+  invariant(accessToken, 'Please include the token to rest api authorization');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`,
+  };
+
+  const content = {
+    "value_key": dataKey,
+    "value_data": dataValue
+  };
+
+  const endpoint = `${restApiEndpoint}/user-data/set`
+
+  let response = await fetch(endpoint, {
+    method: 'POST',
+    headers : headers,
+    body: JSON.stringify(content),
+  }).catch(error => {
+    throw new Error('Data set failed', error);
+  });
+
+  try {
+    let responseJson = await response.json()
+
+    return { result : responseJson.result }
+  }
+  catch(error){
+    return { result : 1}
+  }
+};
+
+
+export const dataGet = async (
+  { restApiEndpoint },
+  { accessToken, dataKey }
+) => {
+  invariant(restApiEndpoint, 'Please include rest api endpoint');
+  invariant(accessToken, 'Please include the token to rest api authorization');
+  invariant(dataKey, 'Please include the dataKey field');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`,
+  };
+
+  const content = {
+    "value_keys": [ dataKey ],
+  };
+  
+  const endpoint = `${restApiEndpoint}/user-data/get`
+
+  let response = await fetch(endpoint, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(content),
+  }).catch(error => {
+    throw new Error('Data Get failed', error);
+  });
+
+  try {
+    let responseJson = await response.json()
+    return {
+      result: responseJson.result,
+      dataValues: responseJson.values
+     }
+  }
+  catch(error){
+    return { result : 1}
+  }
+};
+
+export const walletsGet = async (
+  { restApiEndpoint },
+  { accessToken }
+) => {
+  invariant(restApiEndpoint, 'Please include rest api endpoint');
+  invariant(accessToken, 'Please include the token to rest api authorization');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`,
+  };
+
+  let response = await fetch(`${restApiEndpoint}/user-wallets/get`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({}),
+  }).catch(error => {
+    throw new Error('Failed to wallets get', error);
+  });
+  
+  try {
+    let responseJson = await response.json();
+
+    let walletsInfo = [];
+    responseJson.wallets_private.forEach(walletInfoJson => {
+      let info = {
+        isPublic: false,
+        address: walletInfoJson.address,
+        chain: walletInfoJson.chain,
+        family: walletInfoJson.family,
+        label: walletInfoJson.label,
+        tags: walletInfoJson.tags,
+      };
+      walletsInfo.push(info);
+    })
+
+    responseJson.wallets_public.forEach(walletInfoJson => {
+      let info = {
+        isPublic: true,
+        address: walletInfoJson.address,
+        chain: walletInfoJson.chain,
+        family: walletInfoJson.family,
+        label: walletInfoJson.label,
+        tags: walletInfoJson.tags
+      }
+      walletsInfo.push(info);
+    })
+
+    return {
+      result: responseJson.result,
+      walletsInfo: walletsInfo,
+    }
+  } catch(error)
+  {
+    throw new Error(`Failed to wallets get`, error);
+  };
+};
+
 export const logout = (
   {
     issuer,
