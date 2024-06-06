@@ -291,3 +291,41 @@ If user are entering with `web3` crypto wallet and wallet is unknown for HyperID
       }
     }
 ```
+
+### Working with user's data storage
+
+HyperID gives you posibility to store user related data to user's storarage as key-value pair as well as get information about users wallet. For each request you should setup `restApiEndpoint` - url which sample gets from OpenID Configuration and `accessToken` for user authorized request.
+
+### 1. User wallets
+
+Request returns list of all wallets attached to the user`s account:
+* public wallets accessible to the every client and yours
+* private wallets accessible only for your client only
+
+```JS
+let response = await walletsGet({ restApiEndpoint: authState.restApiEndpoint },
+        { accessToken: authState.accessToken });
+```
+
+### 2. Data set
+
+Request which setup for `key` paired `value`.
+
+```JS
+let response = await dataSet({ restApiEndpoint : authState.restApiEndpoint }, {
+        accessToken: authState.accessToken,
+        dataKey: "your data key there",
+        dataValue: "your data value",
+      });
+```
+
+### 3. Data get
+
+Request which returns `value` for given `key`
+
+```JS
+let response = await dataGet({ restApiEndpoint : authState.restApiEndpoint }, {
+        accessToken: authState.accessToken,
+        dataKey: "your data key there",
+      });
+```
