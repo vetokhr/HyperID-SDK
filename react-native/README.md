@@ -154,7 +154,7 @@ You can use `HyperID` as default OpenID Connect identity provider. You can pick 
       clientSecret: "your_client_secret",
       clientAuthMethod: "basic",
       additionalParameters: {},
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-set'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -164,14 +164,15 @@ You can use `HyperID` as default OpenID Connect identity provider. You can pick 
 }
 ```
 
-### 2. Wallet add auth flow
+### 2. Wallet get auth flow
 
 Wallet auth flow presents flow which allows you to login user with HyperID account and his crypto wallet. After login completion user could create or use attached to the account wallet. Information about wallet will be attached to user's `access token` which could be extracted with any `JWT` library.
 > You can find `JWT` libraries here https://jwt.io/libraries
 
 Use `wallet_get_mode` parameter to specify wallet add mode.
-* `wallet add fast` value `2` adds wallet without signing data
-* `wallet add full` value `3` adds wallet and waiting for completing signing data with user's wallet
+* `auto wallet get` value `0` gets wallet automaticaly
+* `wallet get fast` value `2` gets wallet without signing data
+* `wallet get full` value `3` gets wallet and waiting for completing signing data with user's wallet
 
 ```JS
 {
@@ -184,7 +185,7 @@ Use `wallet_get_mode` parameter to specify wallet add mode.
         flow_mode:        "4",
         wallet_get_mode:  "2"
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-set'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -209,7 +210,7 @@ In HyperID user can select other identity provider like `Google`, `AppleID`, `Di
         flow_mode:          "9",
         identity_provider:  "google"
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-set'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -234,7 +235,7 @@ HyperID allows authorize user for transaction. After login transaction will be s
       additionalParameters: {
         transaction: '{"from":"0x43D192d3eC9CaEFbc92385bED8508d87E566595f","to":"0x0AeB980AB115E45409D9bA33CCffcc75995E3dfA","chain":"11155111","data":"0x70a0823100000000000000000000000043d192d3ec9caefbc92385bed8508d87e566595f"}'
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-set'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -282,7 +283,7 @@ If user are entering with `web3` crypto wallet and wallet is unknown for HyperID
       additionalParameters: {
         flow_mode:        "6",
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-set'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',

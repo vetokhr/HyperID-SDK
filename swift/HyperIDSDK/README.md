@@ -120,7 +120,7 @@ List of WalletFamilies could be discovered in `HyperIDSDK`'s `openIDConfiguratio
 The method starts auth with using your cryptowallet and returns ready-to-sign-in URL to HyperID services.
 | Parameter | Type | Definition|
 |-|-|-|
-|`walletGetMode`| `WalletGetMode`| `.walletGetFast` value(default) allows to join the wallet to the HyperID witount verifying the user's ownership<br>`.walletGetFull` value allows to join new one with verifying signature or resotre session to existing wallet
+|`walletGetMode`| `WalletGetMode`| `.autoWalletGet` allow to join wallet automaticaly <br>`.walletGetFast` value(default) allows to join the wallet to the HyperID witount verifying the user's ownership<br>`.walletGetFull` value allows to join new one with verifying signature or resotre session to existing wallet
 |`walletFamily` | `WalletFamily` | Parameter which specify working network for Web3 (`Ethereum` by default)|
 
 #### Sample

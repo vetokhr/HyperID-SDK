@@ -28,7 +28,7 @@ const configs = {
       clientSecret: "your_client_secret",
       clientAuthMethod: "basic",
       additionalParameters: {},
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-get'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -46,7 +46,7 @@ const configs = {
         flow_mode:        "4",
         wallet_get_mode:  "2"
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-get'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -64,7 +64,7 @@ const configs = {
         flow_mode:          "9",
         identity_provider:  "google"
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-get'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -79,9 +79,9 @@ const configs = {
       clientSecret: "your_client_secret",
       clientAuthMethod: "basic",
       additionalParameters: {
-        transaction: '{"from":"0x43D192d3eC9CaEFbc92385bED8508d87E566595f","to":"0x0AeB980AB115E45409D9bA33CCffcc75995E3dfA","chain":"11155111","data":"0x70a0823100000000000000000000000043d192d3ec9caefbc92385bed8508d87e566595f"}'
+        transaction: '{"to":"0x0AeB980AB115E45409D9bA33CCffcc75995E3dfA","chain":"11155111","data":"0x70a0823100000000000000000000000043d192d3ec9caefbc92385bed8508d87e566595f"}'
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-get'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
@@ -98,14 +98,14 @@ const configs = {
       additionalParameters: {
         flow_mode:        "6",
       },
-      scopes: ['openid', 'email', 'user_data_set', 'user_data_get'],
+      scopes: ['openid', 'email', 'user-data-set', 'user-data-get'],
    
       serviceConfiguration: {
         authorizationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/auth',
         tokenEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/token',
         revocationEndpoint: 'https://login.hypersecureid.com/auth/realms/HyperID/protocol/openid-connect/revoke'
       }
-    },
+  },
 };
 
 const defaultAuthState = {
@@ -115,6 +115,11 @@ const defaultAuthState = {
   accessTokenExpirationDate: '',
   refreshToken: '',
   restApiEndpoint: '',
+  wallet_address: '',
+  is_wallet_verified: '',
+  wallet_chain_id: '',
+  email: '',
+  is_guest: '',
 };
 
 const App = () => {
@@ -142,10 +147,45 @@ const App = () => {
       const openidConfig = await response.json();
       let restApiEndpointDiscover = openidConfig.rest_api_token_endpoint
 
+      let walletAddress = null
+      let isWalletVerified = null
+      let walletChain = null
+      let email = null
+      let isGuest = null
+
+      if(newAuthState.accessToken) {
+        const headers = {
+          'Authorization': `Bearer ${newAuthState.accessToken}`,
+        };
+
+        const userInfoResponse = await fetch(openidConfig.userinfo_endpoint, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({}) });
+        const userInfoResponseJson = await userInfoResponse.json();
+
+        walletAddress = userInfoResponseJson.wallet_address
+        isWalletVerified = userInfoResponseJson.is_wallet_verified
+        walletChain = userInfoResponseJson.wallet_chain_id
+        email = userInfoResponseJson.email
+        isGuest = userInfoResponseJson.is_guest
+
+        console.log(`walletAddress = ${walletAddress}`)
+        console.log(`isWalletVerified = ${isWalletVerified}`)
+        console.log(`walletChain = ${walletChain}`)
+        console.log(`email = ${email}`)
+        console.log(`isGuest = ${isGuest}`)
+      }
+
       setAuthState({
         hasLoggedInOnce: true,
         provider: provider,
         restApiEndpoint: restApiEndpointDiscover,
+        wallet_address: walletAddress,
+        is_wallet_verified: isWalletVerified,
+        wallet_chain_id: walletChain,
+        email: email,
+        is_guest: isGuest,
         ...newAuthState,
       });
     } catch (error) {
@@ -219,6 +259,7 @@ const App = () => {
       });
 
       console.log(result.result)
+      Alert.alert('Data set complete', `Result is ${result.result.toString()}`);
 
     } catch (error) {
       Alert.alert('Data set failed', error.message);
@@ -236,6 +277,7 @@ const App = () => {
       });
 
       console.log(answer.dataValues)
+      Alert.alert('Data get complete', `Result is ${JSON.stringify(answer.dataValues)}`);
 
     } catch (error) {
       Alert.alert('Failed to revoke token', error.message);
@@ -254,18 +296,13 @@ const App = () => {
       console.log(response.result)
       console.log(response.walletsInfo)
 
+      Alert.alert('Wallets get complete', `Result is ${response.result}.\n Wallets info/[${JSON.stringify(response.walletsInfo)}]`);
+
     } catch (error) {
       Alert.alert('Failed to revoke token', error.message);
     }
   }, [authState]);
 
-  /*
-    <FormLabel>accessTokenExpirationDate</FormLabel>
-    <FormValue>{authState.accessTokenExpirationDate}</FormValue>
-
-    <FormLabel>scopes</FormLabel>
-    <FormValue>{authState.scopes.join(', ')}</FormValue>
-   */
   return (
     <Page>
       {authState.accessToken ? (
@@ -282,6 +319,7 @@ const App = () => {
           {authState.hasLoggedInOnce ? 'Goodbye.' : 'Hello, stranger.'}
         </Heading>
       )}
+
       {!authState.accessToken ? (
         <RNPickerSelect
           items={[
@@ -295,6 +333,41 @@ const App = () => {
           value={selectedConfiguration}
         />
       ) : null}
+      {authState.email ? (
+        <Form>
+          <FormLabel>Email</FormLabel>
+          <FormValue>{authState.email}</FormValue>
+        </Form>
+      ) : ( null )}
+
+      {authState.wallet_address ? (
+        <Form>
+          <FormLabel>Wallet address</FormLabel>
+          <FormValue>{authState.wallet_address}</FormValue>
+        </Form>
+      ) : ( null )}
+
+      {authState.is_wallet_verified ? (
+        <Form>
+          <FormLabel>Is wallet verified</FormLabel>
+          <FormValue>{authState.is_wallet_verified}</FormValue>
+        </Form>
+      ) : ( null )}
+
+      {authState.wallet_chain_id ? (
+        <Form>
+          <FormLabel>Wallet chain id</FormLabel>
+          <FormValue>{authState.wallet_chain_id}</FormValue>
+        </Form>
+      ) : ( null )}
+
+      {authState.is_guest ? (
+        <Form>
+          <FormLabel>Is guest</FormLabel>
+          <FormValue>{authState.is_guest}</FormValue>
+        </Form>
+      ) : ( null )}
+      
       <ButtonContainer>
         {!authState.accessToken ? (
             <Button
